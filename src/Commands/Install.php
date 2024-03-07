@@ -4,6 +4,7 @@ namespace ALajusticia\Logins\Commands;
 
 use ALajusticia\Logins\Helpers\SanctumHelpers;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 
 class Install extends Command
 {
@@ -12,7 +13,7 @@ class Install extends Command
      *
      * @var string
      */
-    protected $signature = 'logins:install';
+    protected $signature = 'logins:install-prototype';
 
     /**
      * The console command description.
@@ -38,9 +39,15 @@ class Install extends Command
                 $migrationPaths[] = 'vendor/alajusticia/laravel-logins/database/migrations/sanctum';
             }
 
-            $this->call('migrate', [
+            $options = [
                 '--path' => $migrationPaths,
-            ]);
+            ];
+
+            if ($databaseConnection = Config::get('logins.database_connection')) {
+                $options['--database'] = $databaseConnection;
+            }
+
+            $this->call('migrate', $options);
 
             $this->info('Installation was successful!');
         }

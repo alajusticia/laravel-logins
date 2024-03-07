@@ -18,7 +18,7 @@ class LoginsUserProvider extends EloquentUserProvider
     {
         $model = $this->createModel();
 
-        $retrievedModel = $this->newModelQuery($model)->where(
+        $retrievedModel = $this->newModelQuery($model)->with('logins')->where(
             $model->getAuthIdentifierName(), $identifier
         )->first();
 
@@ -26,7 +26,7 @@ class LoginsUserProvider extends EloquentUserProvider
             return;
         }
 
-        $login = $retrievedModel->logins()->where('remember_token', $token)->first();
+        $login = $retrievedModel->logins->whereStrict('remember_token', $token)->first();
 
         return $login && hash_equals($login->remember_token, $token) ? $retrievedModel : null;
     }

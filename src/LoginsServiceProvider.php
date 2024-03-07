@@ -4,9 +4,7 @@ namespace ALajusticia\Logins;
 
 use ALajusticia\Logins\Commands\Install;
 use ALajusticia\Logins\Events\LoggedIn;
-use ALajusticia\Logins\Macros\SessionGuardMacros;
 use ALajusticia\Logins\Notifications\NewLogin;
-use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
@@ -57,31 +55,23 @@ class LoginsServiceProvider extends ServiceProvider
         });
 
         // Register custom session driver
-        Session::extend('logins', function (Application $app) {
-            $connection = Config::get('session.connection');
-            $lifetime = Config::get('session.lifetime');
-
-            return new LoginsSessionHandler(
-                app('db')->connection($connection),
-                'logins',
-                $lifetime,
-                $app
-            );
-        });
+//        Session::extend('logins', function (Application $app) {
+//            $connection = Config::get('logins.database_connection');
+//            $lifetime = Config::get('logins.lifetime');
+//
+//            return new LoginsSessionHandler(
+//                app('db')->connection($connection),
+//                'logins',
+//                $lifetime,
+//                $app
+//            );
+//        });
 
         // Register event subscribers
         Event::subscribe('ALajusticia\Logins\Listeners\AuthEventSubscriber');
         Event::subscribe('ALajusticia\Logins\Listeners\SanctumEventSubscriber');
         Event::listen(function (LoggedIn $event) {
             $event->authenticatable->notify(new NewLogin($event->context));
-        });
-
-        // Register macros
-        SessionGuard::mixin(new SessionGuardMacros);
-
-        Session::extend('logins', function (Application $app) {
-            // Return an implementation of SessionHandlerInterface...
-            return new MongoSessionHandler;
         });
 
         // Register Blade directives

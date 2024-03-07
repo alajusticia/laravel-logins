@@ -13,7 +13,7 @@ class LoginFactory
      * Build a new Login model.
      */
     public static function build(
-        LoginEvent|PersonalAccessToken $trigger,
+        string|PersonalAccessToken $trigger,
         RequestContext $context
     ): Login
     {
@@ -42,7 +42,7 @@ class LoginFactory
             // Session
 
             $login->fill([
-                'session_id' => session()->getId(),
+                'session_id' => $trigger,
                 'remember_token' => $trigger->remember ? $trigger->user->getRememberToken() : null,
             ]);
 

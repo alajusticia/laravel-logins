@@ -7,6 +7,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Database connection
+    |--------------------------------------------------------------------------
+    |
+    | The database connection to use to save the logins, this is optional.
+    |
+    | If not provided, wil use the default database connection of your
+    | application.
+    |
+    */
+    'database_connection' => env('SESSION_CONNECTION'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Remember token lifetime
     |--------------------------------------------------------------------------
     |

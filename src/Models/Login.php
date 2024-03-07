@@ -28,6 +28,7 @@ class Login extends Model
      */
     protected $casts = [
         'created_at' => 'datetime',
+        'last_activity_at' => 'datetime',
     ];
 
     /**
