@@ -20,18 +20,36 @@ class LoginsSessionGuard extends SessionGuard
     {
         parent::login($user, $remember);
 
-        // Get as much information as possible about the request
-        $context = new RequestContext;
+        if (Logins::tracked($user)) {
 
-        // Build a new login
-        $login = LoginFactory::buildFromLogin(
-            $context, $this->session->getId(), $user, $remember
-        );
+            // Get as much information as possible about the request
+            $context = new RequestContext;
 
-        // Attach the login to the user and save it
-        $user->logins()->save($login);
+            // Build a new login
+            $login = LoginFactory::buildFromLogin(
+                $context, $this->session->getId(), $user, $remember
+            );
 
-        // Dispatch event
-        event(new LoggedIn($user, $context));
+            // Attach the login to the user and save it
+            $user->logins()->save($login);
+
+            // Dispatch event
+            event(new LoggedIn($user, $context));
+        }
+    }
+
+    /**
+     * Log the user out of the application.
+     *
+     * @return void
+     */
+    public function logout()
+    {
+        if (Logins::tracked($this->user())) {
+            // Delete login
+            $this->user()->logins()->where('session_id', $this->session->getId())->delete();
+        }
+
+        parent::logout();
     }
 }
