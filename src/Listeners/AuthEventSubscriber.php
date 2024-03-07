@@ -2,7 +2,7 @@
 
 namespace ALajusticia\Logins\Listeners;
 
-use ALajusticia\Logins\Events\NewLogin;
+use ALajusticia\Logins\Events\LoggedIn;
 use ALajusticia\Logins\Factories\LoginFactory;
 use ALajusticia\Logins\Logins;
 use ALajusticia\Logins\Models\Login;
@@ -73,7 +73,7 @@ class AuthEventSubscriber
                 // Attach the login to the user and save it
                 $event->user->logins()->save($login);
 
-                event(new NewLogin($event->user, $context));
+                event(new LoggedIn($event->user, $context));
             }
         }
     }

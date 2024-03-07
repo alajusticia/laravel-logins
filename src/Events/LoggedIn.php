@@ -6,7 +6,7 @@ use ALajusticia\Logins\RequestContext;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Queue\SerializesModels;
 
-class NewLogin
+class LoggedIn
 {
     use SerializesModels;
 

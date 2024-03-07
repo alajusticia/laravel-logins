@@ -2,7 +2,7 @@
 
 namespace ALajusticia\Logins\Listeners;
 
-use ALajusticia\Logins\Events\NewLogin;
+use ALajusticia\Logins\Events\LoggedIn;
 use ALajusticia\Logins\Factories\LoginFactory;
 use ALajusticia\Logins\Logins;
 use ALajusticia\Logins\RequestContext;
@@ -36,7 +36,7 @@ class SanctumEventSubscriber
             // Attach the login to the model and save it
             $model->logins()->save($login);
 
-            event(new NewLogin($model, $context));
+            event(new LoggedIn($model, $context));
         }
     }
 

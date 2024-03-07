@@ -3,6 +3,8 @@
 namespace ALajusticia\Logins;
 
 use ALajusticia\Logins\Commands\Install;
+use ALajusticia\Logins\Events\LoggedIn;
+use ALajusticia\Logins\Notifications\NewLogin;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
@@ -53,6 +55,9 @@ class LoginsServiceProvider extends ServiceProvider
         // Register event subscribers
         Event::subscribe('ALajusticia\Logins\Listeners\AuthEventSubscriber');
         Event::subscribe('ALajusticia\Logins\Listeners\SanctumEventSubscriber');
+        Event::listen(function (LoggedIn $event) {
+            $event->authenticatable->notify(new NewLogin($event->context));
+        });
 
         // Register Blade directives
         Blade::if('logins', function () {

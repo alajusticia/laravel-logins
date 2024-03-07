@@ -5,6 +5,8 @@
 - Notify users on new login, emailing them with the information collected
 - Offer your users the ability to log out a specific device, all the devices except the current one, or all at once.
 
+_____
+
 * [Compatibility](#compatibility)
 * [Installation](#installation)
   * [Prepare your authenticatable models](#prepare-your-authenticatable-models)
@@ -22,7 +24,7 @@
     * [Revoke all the logins except the current one](#revoke-all-the-logins-except-the-current-one)
 * [IP address geolocation](#ip-address-geolocation)
 * [Events](#events)
-  * [NewLogin](#newlogin)
+  * [LoggedIn](#loggedin)
 * [License](#license)
 
 ## Compatibility
@@ -39,7 +41,7 @@
 Install the package with composer:
 
 ```bash
-composer require alajusticia/lastguard-core
+composer require alajusticia/logins
 ```
 
 Publish the configuration file (`config/logins.php`) with:
@@ -136,7 +138,8 @@ $currentLogin = request()->user()->current_login;
 ### Check for the current login
 
 Each login instance comes with a dynamic `is_current` attribute.
-It's a boolean that indicates if the login instance corresponds to the login related to the current session or current  
+
+It's a boolean that indicates if the login instance corresponds to the login related to the current session or current
 personal access token used.
 
 ### Revoking logins
@@ -146,7 +149,7 @@ personal access token used.
 Using our custom user provider, you have the ability to log out a specific device, because each session has its own 
 remember token.
 
-To revoke a specific login, use the `logout` method with the ID of the login you want to revoke.
+To revoke a specific login, use the `logout` method with the ID of the login you want to revoke. 
 If no parameter is given, the current login will be revoked.
 
 ```php
@@ -159,7 +162,7 @@ request()->user()->logout(); // Revoke the current login
 
 #### Revoke all the logins
 
-We can destroy all the sessions and revoke all the Sanctum tokens by using the `logoutAll` method.
+We can destroy all the sessions and revoke all the Sanctum tokens by using the `logoutAll` method. 
 Useful when, for example, the user's password is modified, and we want to log out all the devices.
 
 This feature destroys all sessions, even the remembered ones.
@@ -190,12 +193,14 @@ By default, this is how the client's IP address is determined:
 ```php
 // Supports Cloudflare proxy by checking if HTTP_CF_CONNECTING_IP header exists
 // Fallback to built-in Laravel ip() method in Request
+
 return $_SERVER['HTTP_CF_CONNECTING_IP'] ?? request()->ip();
 ```
 
 You can define your own IP address resolution logic, by passing a closure to the `getIpAddressUsing()` static method of
-the `ALajusticia\Logins\Logins` class, in the `boot()` method of your `App\Providers\AppServiceProvider`,  and return
-the resolved IP address:
+the `ALajusticia\Logins\Logins` class, and returning the resolved IP address.
+
+Call it in the `boot()` method of your `App\Providers\AppServiceProvider`:
 
 ```php
 \ALajusticia\Logins\Logins::getIpAddressUsing(function () {
@@ -205,30 +210,50 @@ the resolved IP address:
 
 ## Events
 
-### NewLogin
+### LoggedIn
 
-On a new login, you can listen to the event `ALajusticia\Logins\Events\NewLogin`.
+On a new login, you can listen to the event `ALajusticia\Logins\Events\LoggedIn`.
+
 It receives the authenticated model (in `$authenticatable` property) and a `ALajusticia\Logins\RequestContext` object 
-(in `$context` property) containing all the information collected on the request.
+(in `$context` property) containing all the information collected on the request:
 
 ```php
-use ALajusticia\Logins\Events\NewLogin;
+use ALajusticia\Logins\Events\LoggedIn;
 use Illuminate\Support\Facades\Event;
 
-Event::listen(NewLogin::class, function (NewLogin $event) {
+Event::listen(function (LoggedIn $event) {
     
     // Methods available in RequestContext:
     $event->context->userAgent(); // Returns the full, unparsed, User-Agent header
-    $event->context->ipAddress(); // Returns the IP address
+    $event->context->ipAddress(); // Returns the client's IP address
     $event->context->parser(); // Returns the parser used to parse the User-Agent header
     $event->context->location(); // Returns the location (Stevebauman\Location\Position object), if IP address geolocation enabled
     
     // Methods available in the parser:
     $this->context->parser()->getDevice(); // The name of the device
-    $this->context->parser()->getDeviceType(); // The type of the device (desktop, mobile, tablet, phone...)
+    $this->context->parser()->getDeviceType(); // The type of the device (desktop, mobile, tablet or phone)
     $this->context->parser()->getPlatform(); // The name of the platform/OS
     $this->context->parser()->getBrowser(); // The name of the browser
 })
+```
+
+## Notifications
+
+If you want to send a notification to your users when a new login occurs with their account, pass a notification class
+to the `new_login_notification` option in the `config/logins.php` configuration file.
+
+Laravel Logins comes with a ready-to-use notification (`ALajusticia\Logins\Notifications\NewLogin`),
+or you can use your own.
+
+## Translations
+
+This packages comes with translations for English, Spanish and French, used in the notifications.
+
+If you want to customize the translations or add new ones, you can publish the language files by running this command:
+
+```bash
+php artisan vendor:publish --provider="ALajusticia\Localized\LocalizedServiceProvider" --tag="lang"
+php artisan vendor:publish --tag="logins-lang"
 ```
 
 ## License
