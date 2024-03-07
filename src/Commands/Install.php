@@ -28,19 +28,19 @@ class Install extends Command
     {
         if ($this->confirm('This will run the database migrations required for Laravel Logins. Continue?', true)) {
 
-            $migrationsPath = __DIR__ . '/../../database/migrations';
+            $this->info('Installing...');
 
-            $this->info('Running migrations...');
-
-            $this->call('migrate', [
-                '--path' => $migrationsPath,
-            ]);
+            $migrationPaths = [
+                'vendor/alajusticia/laravel-logins/database/migrations',
+            ];
 
             if (SanctumHelpers::sanctumIsInstalled()) {
-                $this->call('migrate', [
-                    '--path' => $migrationsPath . '/sanctum',
-                ]);
+                $migrationPaths[] = 'vendor/alajusticia/laravel-logins/database/migrations/sanctum';
             }
+
+            $this->call('migrate', [
+                '--path' => $migrationPaths,
+            ]);
 
             $this->info('Installation was successful!');
         }

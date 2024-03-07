@@ -62,7 +62,7 @@ class RequestContext
     /**
      * Get the client's location.
      */
-    public function location(): Position|bool
+    public function location(): Position|bool|null
     {
         return $this->location;
     }

@@ -47,7 +47,7 @@ composer require alajusticia/logins
 Publish the configuration file (`config/logins.php`) with:
 
 ```bash
-php artisan vendor:publish --provider="ALajusticia\Logins\LoginsServiceProvider" --tag="config"
+php artisan vendor:publish --tag="logins-config"
 ```
 
 Run the `logins:install` command (this will run the required database migrations):

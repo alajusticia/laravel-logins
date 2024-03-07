@@ -42,7 +42,7 @@ class LoginsServiceProvider extends ServiceProvider
         // Allow publishing config
         $this->publishes([
             __DIR__.'/../config/logins.php' => config_path('logins.php'),
-        ], 'config');
+        ], 'logins-config');
 
         // Load migrations
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
@@ -70,6 +70,6 @@ class LoginsServiceProvider extends ServiceProvider
         // Allow publishing translations
         $this->publishes([
             __DIR__.'/../lang' => $this->app->langPath('vendor/alajusticia/logins'),
-        ], 'lang');
+        ], 'logins-lang');
     }
 }

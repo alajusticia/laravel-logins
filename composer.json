@@ -1,13 +1,22 @@
 {
     "name": "alajusticia/laravel-logins",
-    "description": "Track and manage sessions and Sanctum tokens, notify users on new login",
+    "description": "Sessions and Sanctum tokens tracking in Laravel apps, users notification on new login, multiple remember tokens, IP geolocation, User-Agent parser",
+    "keywords": [
+        "laravel",
+        "authentification",
+        "user-agent",
+        "login",
+        "remember",
+        "session",
+        "ip",
+        "guard"
+    ],
     "license": "MIT",
     "authors": [
         {
             "name": "Anthony Lajusticia",
             "email": "anthonylajusticia@gmail.com",
-            "homepage": "https://alajusticia.dev",
-            "role": "Developer"
+            "homepage": "https://anthonylajusticia.com"
         }
     ],
     "require": {
@@ -21,8 +30,7 @@
         "illuminate/queue": "^10.0|^11.0",
         "illuminate/session": "^10.0|^11.0",
         "illuminate/support": "^10.0|^11.0",
-        "nesbot/carbon": "^2.67",
-        "petercoles/multilingual-country-list": "^1.2"
+        "nesbot/carbon": "^2.67"
     },
     "require-dev": {
         "mockery/mockery": "^1.4.4",
@@ -48,7 +56,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "LoginsServiceProvider"
+                "ALajusticia\\Logins\\LoginsServiceProvider"
             ]
         }
     }

@@ -67,34 +67,18 @@ class Login extends Model
     }
 
     /**
-     * Add the "location" attribute to get the IP address geolocation.
-     */
-    public function getLocationAttribute(): ?string
-    {
-        $location = [
-            $this->city,
-            $this->region,
-            $this->country,
-        ];
-
-        return array_filter($location) ? implode(', ', $location) : null;
-    }
-
-    /**
      * Dynamicly add the "is_current" attribute.
      */
     public function getIsCurrentAttribute(): bool
     {
         if ($this->session_id && request()->hasSession()) {
 
-            // Session
-
+            // Compare session ID
             return $this->session_id === request()->session()->getId();
 
         } elseif ($this->personal_access_token_id && request()->user()->isAuthenticatedBySanctumToken()) {
 
-            // Sanctum
-
+            // Compare Sanctum personal access token ID
             return $this->personal_access_token_id === request()->user()->currentAccessToken()->id;
         }
 
@@ -115,7 +99,7 @@ class Login extends Model
 
         } elseif ($this->personal_access_token_id) {
 
-            // Revoke Sanctum token
+            // Revoke Sanctum personal access token
             $this->revokeSanctumTokens($this->personal_access_token_id);
 
         }
