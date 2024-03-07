@@ -67,6 +67,9 @@ class LoginsServiceProvider extends ServiceProvider
 //            );
 //        });
 
+        // Configure our authentication guard
+        $this->configureGuard();
+
         // Register event subscribers
         Event::subscribe('ALajusticia\Logins\Listeners\AuthEventSubscriber');
         Event::subscribe('ALajusticia\Logins\Listeners\SanctumEventSubscriber');
@@ -86,5 +89,54 @@ class LoginsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../lang' => $this->app->langPath('vendor/alajusticia/logins'),
         ], 'logins-lang');
+    }
+
+    /**
+     * Configure our authentication guard.
+     */
+    protected function configureGuard(): void
+    {
+        Auth::resolved(function ($auth) {
+            $auth->extend('logins', function ($app, $name, array $config) {
+                return tap($this->createGuard($name, $config), function ($guard) {
+                    app()->refresh('request', $guard, 'setRequest');
+                });
+            });
+        });
+    }
+
+    /**
+     * Register the guard.
+     */
+    protected function createGuard(string $name, array $config): LoginsSessionGuard
+    {
+        $provider = Auth::createUserProvider($config['provider'] ?? null);
+
+        $guard = new LoginsSessionGuard(
+            $name,
+            $provider,
+            $this->app['session.store'],
+        );
+
+        // When using the remember me functionality of the authentication services we
+        // will need to be set the encryption instance of the guard, which allows
+        // secure, encrypted cookie values to get generated for those cookies.
+        if (method_exists($guard, 'setCookieJar')) {
+            $guard->setCookieJar($this->app['cookie']);
+        }
+
+        if (method_exists($guard, 'setDispatcher')) {
+            $guard->setDispatcher($this->app['events']);
+        }
+
+        if (method_exists($guard, 'setRequest')) {
+            $guard->setRequest($this->app->refresh('request', $guard, 'setRequest'));
+        }
+
+        if (isset($config['remember'])) {
+            $guard->setRememberDuration($config['remember']);
+        }
+
+        return $guard;
     }
 }
