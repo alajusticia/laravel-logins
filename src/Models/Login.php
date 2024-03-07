@@ -19,6 +19,17 @@ class Login extends Model
 
     protected $table = 'logins';
 
+    public $timestamps = false;
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'created_at' => 'datetime',
+    ];
+
     /**
      * The attributes that aren't mass assignable.
      *

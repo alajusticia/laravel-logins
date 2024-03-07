@@ -23,7 +23,7 @@ class LoginFactory
 
         $login->fill([
             'user_agent' => $context->userAgent(),
-            'ip' => $context->ipAddress(),
+            'ip_address' => $context->ipAddress(),
             'device_type' => $context->parser()->getDeviceType(),
             'device' => $context->parser()->getDevice(),
             'platform' => $context->parser()->getPlatform(),
