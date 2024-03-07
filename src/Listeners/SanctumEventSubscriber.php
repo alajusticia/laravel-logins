@@ -28,7 +28,7 @@ class SanctumEventSubscriber
             $context = new RequestContext();
 
             // Build a new login
-            $login = LoginFactory::build($personalAccessToken, $context);
+            $login = LoginFactory::buildFromSanctumToken($context, $personalAccessToken);
 
             // Set the expiration date
             $login->expiresAt($personalAccessToken->expires_at);
@@ -36,6 +36,7 @@ class SanctumEventSubscriber
             // Attach the login to the model and save it
             $model->logins()->save($login);
 
+            // Dispatch event
             event(new LoggedIn($model, $context));
         }
     }
