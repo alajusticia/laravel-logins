@@ -1,0 +1,55 @@
+{
+    "name": "alajusticia/laravel-logins",
+    "description": "Track and manage sessions and Sanctum tokens, notify users on new login",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anthony Lajusticia",
+            "email": "anthonylajusticia@gmail.com",
+            "homepage": "https://alajusticia.dev",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "alajusticia/laravel-expirable": "^2.3",
+        "illuminate/auth": "^10.0|^11.0",
+        "illuminate/collections": "^10.0|^11.0",
+        "illuminate/contracts": "^10.0|^11.0",
+        "illuminate/database": "^10.0|^11.0",
+        "illuminate/http": "^10.0|^11.0",
+        "illuminate/queue": "^10.0|^11.0",
+        "illuminate/session": "^10.0|^11.0",
+        "illuminate/support": "^10.0|^11.0",
+        "nesbot/carbon": "^2.67",
+        "petercoles/multilingual-country-list": "^1.2"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.4.4",
+        "phpunit/phpunit": "^10.0.7",
+        "orchestra/testbench": "^8.0",
+        "laravel/sanctum": "^3.3",
+        "whichbrowser/parser": "^2.1",
+        "jenssegers/agent": "^2.6",
+        "buggregator/trap": "^1.4",
+        "stevebauman/location": "^7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "ALajusticia\\Logins\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ALajusticia\\Logins\\Tests\\": "tests",
+            "ALajusticia\\Logins\\Tests\\Database\\Factories\\": "tests/database/factories"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LoginsServiceProvider"
+            ]
+        }
+    }
+}
