@@ -49,6 +49,9 @@ class LoginsServiceProvider extends ServiceProvider
         // Load migrations
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
+        // Configure our authentication guard
+        $this->configureGuard();
+
         // Register custom Eloquent user provider
         Auth::provider('logins', function (Application $app, array $config) {
             return new LoginsUserProvider($app['hash'], $config['model']);
@@ -66,9 +69,6 @@ class LoginsServiceProvider extends ServiceProvider
 //                $app
 //            );
 //        });
-
-        // Configure our authentication guard
-        $this->configureGuard();
 
         // Register event subscribers
         Event::subscribe('ALajusticia\Logins\Listeners\AuthEventSubscriber');

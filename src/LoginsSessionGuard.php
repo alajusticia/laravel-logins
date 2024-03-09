@@ -22,6 +22,8 @@ class LoginsSessionGuard extends SessionGuard
 
         if (Logins::tracked($user)) {
 
+            $this->session->start();
+
             // Get as much information as possible about the request
             $context = new RequestContext;
 
@@ -32,6 +34,8 @@ class LoginsSessionGuard extends SessionGuard
 
             // Attach the login to the user and save it
             $user->logins()->save($login);
+
+            session()->put('login_id', $login->id);
 
             // Dispatch event
             event(new LoggedIn($user, $context));

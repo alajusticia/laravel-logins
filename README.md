@@ -44,7 +44,7 @@ Install the package with composer:
 composer require alajusticia/logins
 ```
 
-Publish the configuration file (`config/logins.php`) with:
+Publish the configuration file (`logins.php`) with:
 
 ```bash
 php artisan vendor:publish --tag="logins-config"
@@ -90,7 +90,7 @@ which one you want to use.
 This package comes with a modified Eloquent user provider that retrieve remembered users from the logins table, allowing 
 each session to have its own remember token and giving us the ability to revoke sessions individually.
 
-In your `config/auth.php` configuration file, use the `logins` driver in the user providers list for the users you want to track:
+In your `auth.php` configuration file, use the `logins` driver in the user providers list for the users you want to track:
 
 ```php
 'providers' => [
@@ -118,7 +118,7 @@ methods to list their logins and to give you full individual control on them.
 
 Everytime a successful authentication occurs, information will automatically be saved in the database in the `logins` table.
 
-Also, if a notification class is defined in the `config/logins.php` configuration file, an email will be sent to notify 
+Also, if a notification class is defined in the `logins.php` configuration file, an email will be sent to notify 
 your user on every new login.
 
 ### Retrieving the logins
@@ -186,7 +186,7 @@ In addition to the information extracted from the user-agent, you can collect in
 the client's IP address.
 
 To use this feature, you have to install and configure this package: [https://github.com/stevebauman/location](https://github.com/stevebauman/location).
-Then, enable the IP address geolocation in the `config/logins.php` configuration file.
+Then, enable the IP address geolocation in the `logins.php` configuration file.
 
 By default, this is how the client's IP address is determined:
 
@@ -240,7 +240,7 @@ Event::listen(function (LoggedIn $event) {
 ## Notifications
 
 If you want to send a notification to your users when a new login occurs with their account, pass a notification class
-to the `new_login_notification` option in the `config/logins.php` configuration file.
+to the `new_login_notification` option in the `logins.php` configuration file.
 
 Laravel Logins comes with a ready-to-use notification (`ALajusticia\Logins\Notifications\NewLogin`),
 or you can use your own.
