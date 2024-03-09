@@ -74,9 +74,11 @@ class LoginsServiceProvider extends ServiceProvider
         // Register event subscribers
         Event::subscribe('ALajusticia\Logins\Listeners\SessionEventSubscriber');
         Event::subscribe('ALajusticia\Logins\Listeners\SanctumEventSubscriber');
-        Event::listen(function (LoggedIn $event) {
-            $event->authenticatable->notify(new NewLogin($event->context));
-        });
+        if ($notificationClass = Config::get('logins.new_login_notification')) {
+            Event::listen(function (LoggedIn $event) use ($notificationClass) {
+                $event->authenticatable->notify(new $notificationClass($event->context));
+            });
+        }
 
         // Register Blade directives
         Blade::if('logins', function () {

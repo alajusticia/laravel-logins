@@ -90,6 +90,9 @@ return [
     | Laravel Logins comes with a ready-to-use notification, or you can use
     | your own.
     |
+    | If you don't want this package to send notification, or if you want to
+    | use your own logic/listener, set the value to false.
+    |
     */
 
     'new_login_notification' => \ALajusticia\Logins\Notifications\NewLogin::class,

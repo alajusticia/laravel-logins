@@ -8,6 +8,7 @@ use ALajusticia\Logins\Traits\ManagesLogins;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Config;
 
 class Login extends Model
 {
@@ -49,6 +50,16 @@ class Login extends Model
     protected $appends = [
         'is_current',
     ];
+
+    /**
+     * Get the current connection name for the model.
+     *
+     * @return string|null
+     */
+    public function getConnectionName()
+    {
+        return Config::get('logins.database_connection');
+    }
 
     /**
      * The "booted" method of the model.
