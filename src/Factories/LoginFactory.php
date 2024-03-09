@@ -5,7 +5,7 @@ namespace ALajusticia\Logins\Factories;
 use ALajusticia\Logins\Models\Login;
 use ALajusticia\Logins\RequestContext;
 use Carbon\Carbon;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Config;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -14,11 +14,11 @@ class LoginFactory
     public static function buildFromLogin(
         RequestContext $context,
         string $sessionId,
-        AuthenticatableContract $user,
+        Authenticatable $user,
         bool $remember,
     ): Login
     {
-        $login = self::getNewLogin($context);
+        $login = self::getNewLoginWithContext($context);
 
         $login->fill([
             'session_id' => $sessionId,
@@ -44,14 +44,14 @@ class LoginFactory
         PersonalAccessToken $token
     ): Login
     {
-        $login = self::getNewLogin($context);
+        $login = self::getNewLoginWithContext($context);
 
         $login->personal_access_token_id = $token->id;
 
         return $login;
     }
 
-    protected static function getNewLogin(RequestContext $context): Login
+    protected static function getNewLoginWithContext(RequestContext $context): Login
     {
         return new Login([
             'user_agent' => $context->userAgent(),

@@ -135,11 +135,7 @@ class LoginsSessionHandler implements ExistenceAwareInterface, SessionHandlerInt
     protected function performInsert($sessionId, $payload)
     {
         try {
-            // Get as much information as possible about the request
-            $context = new RequestContext;
-
-            // Build a new login
-            $login = LoginFactory::build($sessionId, $context);
+            Logins::trackLoginFromSession();
         } catch (QueryException) {
             $this->performUpdate($sessionId, $payload);
         }

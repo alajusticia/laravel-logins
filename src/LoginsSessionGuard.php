@@ -2,46 +2,10 @@
 
 namespace ALajusticia\Logins;
 
-use ALajusticia\Logins\Events\LoggedIn;
-use ALajusticia\Logins\Factories\LoginFactory;
 use Illuminate\Auth\SessionGuard;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 
 class LoginsSessionGuard extends SessionGuard
 {
-    /**
-     * Log a user into the application.
-     *
-     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
-     * @param  bool  $remember
-     * @return void
-     */
-    public function login(AuthenticatableContract $user, $remember = false): void
-    {
-        parent::login($user, $remember);
-
-        if (Logins::tracked($user)) {
-
-            $this->session->start();
-
-            // Get as much information as possible about the request
-            $context = new RequestContext;
-
-            // Build a new login
-            $login = LoginFactory::buildFromLogin(
-                $context, $this->session->getId(), $user, $remember
-            );
-
-            // Attach the login to the user and save it
-            $user->logins()->save($login);
-
-            session()->put('login_id', $login->id);
-
-            // Dispatch event
-            event(new LoggedIn($user, $context));
-        }
-    }
-
     /**
      * Log the user out of the application.
      *
@@ -49,6 +13,11 @@ class LoginsSessionGuard extends SessionGuard
      */
     public function logout()
     {
+        // To be able to link the old session to its corresponding login,
+        // we needed to extend the session guard and override the logout method.
+        // That way, we make sure we get the right session ID, before it is
+        // regenerated, no matter which session driver is used.
+
         if (Logins::tracked($this->user())) {
             // Delete login
             $this->user()->logins()->where('session_id', $this->session->getId())->delete();
