@@ -4,15 +4,12 @@ namespace ALajusticia\Logins;
 
 use ALajusticia\Logins\Commands\Install;
 use ALajusticia\Logins\Events\LoggedIn;
-use ALajusticia\Logins\Notifications\NewLogin;
-use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
 
 class LoginsServiceProvider extends ServiceProvider
@@ -57,19 +54,6 @@ class LoginsServiceProvider extends ServiceProvider
         Auth::provider('logins', function (Application $app, array $config) {
             return new LoginsUserProvider($app['hash'], $config['model']);
         });
-
-        // Register custom session driver
-//        Session::extend('logins', function (Application $app) {
-//            $connection = Config::get('logins.database_connection');
-//            $lifetime = Config::get('logins.lifetime');
-//
-//            return new LoginsSessionHandler(
-//                app('db')->connection($connection),
-//                'logins',
-//                $lifetime,
-//                $app
-//            );
-//        });
 
         // Register event subscribers
         Event::subscribe('ALajusticia\Logins\Listeners\SessionEventSubscriber');
