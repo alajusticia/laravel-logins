@@ -87,12 +87,15 @@ which one you want to use.
 
 ### Configure the authentication guard
 
-This package extends the default Laravel session guard.
+This package comes with a custom authentication guard (`ALajusticia\Logins\LoginsSessionGuard`) that extends the default
+Laravel session guard, only adding the code to delete the related login in the `logout()` method.
+This was necessary, to make sure we get the correct session ID before it is regenerated (listening to the Logout event 
+was not an option because session is regenerated before the event being dispatched).
 
-In your `auth.php` configuration file, use the `logins` driver in your guards:
+In the `guards` options of your `auth.php` configuration file, use the `logins` driver instead of the `session` driver:
 
 ```php
-'providers' => [
+'guards' => [
     'web' => [
         'driver' => 'logins',
         'provider' => 'users',
