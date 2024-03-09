@@ -247,7 +247,7 @@ or you can use your own.
 
 ## Translations
 
-This packages comes with translations for English, Spanish and French, used in the notifications.
+This package includes translations for English, Spanish and French.
 
 If you want to customize the translations or add new ones, you can publish the language files by running this command:
 

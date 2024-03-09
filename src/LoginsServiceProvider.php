@@ -86,7 +86,7 @@ class LoginsServiceProvider extends ServiceProvider
         });
 
         // Load translations
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'logins');
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'alajusticia/logins');
 
         // Allow publishing translations
         $this->publishes([

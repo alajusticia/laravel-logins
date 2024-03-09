@@ -36,33 +36,33 @@ class NewLogin extends Notification
         };
 
         $mailMessage = (new MailMessage)
-            ->subject(__('logins::notifications.new_login.subject'))
-            ->line(__('logins::notifications.new_login.title'))
-            ->line(__('logins::notifications.new_login.review_information'));
+            ->subject(__('alajusticia/logins::notifications.new_login.subject'))
+            ->line(__('alajusticia/logins::notifications.new_login.title'))
+            ->line(__('alajusticia/logins::notifications.new_login.review_information'));
 
-        $information = __('logins::notifications.new_login.device_type', ['value' => $deviceType]);
+        $information = __('alajusticia/logins::notifications.new_login.device_type', ['value' => $deviceType]);
 
         if (! empty($this->context->parser()->getDevice())) {
-            $information .= '<br>' . __('logins::notifications.new_login.device_name', ['value' => $this->context->parser()->getDevice()]);
+            $information .= '<br>' . __('alajusticia/logins::notifications.new_login.device_name', ['value' => $this->context->parser()->getDevice()]);
         }
 
-        $information .= '<br>' . __('logins::notifications.new_login.platform', ['value' => $this->context->parser()->getPlatform()]);
-        $information .= '<br>' . __('logins::notifications.new_login.browser', ['value' => $this->context->parser()->getBrowser()]);
-        $information .= '<br>' . __('logins::notifications.new_login.ip_address', ['value' => $this->context->ipAddress()]);
+        $information .= '<br>' . __('alajusticia/logins::notifications.new_login.platform', ['value' => $this->context->parser()->getPlatform()]);
+        $information .= '<br>' . __('alajusticia/logins::notifications.new_login.browser', ['value' => $this->context->parser()->getBrowser()]);
+        $information .= '<br>' . __('alajusticia/logins::notifications.new_login.ip_address', ['value' => $this->context->ipAddress()]);
 
         if (! empty($this->context->location())) {
             $country = $this->context->location()->countryName ?? $this->context->location()->countryCode;
             if ($country) {
-                $information .= '<br>' . __('logins::notifications.new_login.country', ['value' => $country]);
+                $information .= '<br>' . __('alajusticia/logins::notifications.new_login.country', ['value' => $country]);
             }
         }
 
         $mailMessage
             ->line(new HtmlString($information))
-            ->line(__('logins::notifications.new_login.not_you'));
+            ->line(__('alajusticia/logins::notifications.new_login.not_you'));
 
         if ($securityPageRoute = Config::get('logins.security_page_route')) {
-            $mailMessage->action(__('logins::notifications.new_login.check_security'), route($securityPageRoute));
+            $mailMessage->action(__('alajusticia/logins::notifications.new_login.check_security'), route($securityPageRoute));
         }
 
         return $mailMessage;
