@@ -59,7 +59,7 @@ php artisan logins:install
 ### Prepare your authenticatable models
 
 In order to track the logins of your app's users, add the `ALajusticia\Logins\Traits\HasLogins` trait
-on your authenticatable models that you want to track:
+in your authenticatable models that you want to track:
 
 ```php
 use ALajusticia\Logins\Traits\HasLogins;
@@ -85,12 +85,29 @@ It supports the two most popular parsers:
 Before using Laravel Logins, you need to choose a supported parser, install it and indicate in the configuration file 
 which one you want to use.
 
+### Configure the authentication guard
+
+This package extends the default Laravel session guard.
+
+In your `auth.php` configuration file, use the `logins` driver in your guards:
+
+```php
+'providers' => [
+    'web' => [
+        'driver' => 'logins',
+        'provider' => 'users',
+    ],
+    
+    // ...
+],
+```
+
 ### Configure the user provider
 
 This package comes with a modified Eloquent user provider that retrieve remembered users from the logins table, allowing 
 each session to have its own remember token and giving us the ability to revoke sessions individually.
 
-In your `auth.php` configuration file, use the `logins` driver in the user providers list for the users you want to track:
+In your `auth.php` configuration file, use the `logins` driver in the user providers list for the users you want to enable logins:
 
 ```php
 'providers' => [
