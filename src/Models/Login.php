@@ -52,6 +52,15 @@ class Login extends Model
     ];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'location' => 'array',
+    ];
+
+    /**
      * Get the current connection name for the model.
      *
      * @return string|null
