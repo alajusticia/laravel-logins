@@ -4,6 +4,7 @@
 - Save this information in your database, allowing you to display it in the user's account
 - Notify users of a new login, along with the information collected
 - Offer your users the ability to log out a specific device, all the devices except the current one, or all at once.
+- Log out a device, without affecting the other remembered devices (each remembered session has its own token)
 
 _____
 
@@ -11,6 +12,7 @@ _____
 * [Installation](#installation)
   * [Prepare your authenticatable models](#prepare-your-authenticatable-models)
   * [Choose and install a user-agent parser](#choose-and-install-a-user-agent-parser)
+  * [Configure the authentication guard](#configure-the-authentication-guard)
   * [Configure the user provider](#configure-the-user-provider)
   * [Laravel Sanctum](#laravel-sanctum)
 * [Usage](#usage)
@@ -25,6 +27,8 @@ _____
 * [IP address geolocation](#ip-address-geolocation)
 * [Events](#events)
   * [LoggedIn](#loggedin)
+* [Notifications](#notifications)
+* [Translations](#translations)
 * [License](#license)
 
 ## Compatibility
@@ -34,7 +38,7 @@ _____
 - It works with all the session drivers supported by Laravel, except the cookie driver which saves the sessions only in
   the client browser and the array driver
 
-- It also supports personal API tokens provided by **Laravel Sanctum (v3)**
+- It also supports personal access tokens provided by **Laravel Sanctum (v3)**
 
 ## Installation
 
@@ -133,13 +137,14 @@ command again to update your installation.
 
 ## Usage
 
-The `ALajusticia\Logins\Traits\HasLogins` trait provided by this package surcharge your authenticatable models with 
-methods to list their logins and to give you full individual control on them.
+The `ALajusticia\Logins\Traits\HasLogins` trait provides your authenticatable models with methods to retrieve and manage
+the user's logins.
 
-Everytime a successful authentication occurs, information will automatically be saved in the database in the `logins` table.
+Everytime a new successful login occurs or a Sanctum token is created, information about the request will automatically
+be saved in the database in the `logins` table.
 
-Also, if a notification class is defined in the `logins.php` configuration file, an email will be sent to notify 
-your user on every new login.
+Also, if a notification class is defined in the `logins.php` configuration file, a notification will be sent to your
+user with the information.
 
 ### Retrieving the logins
 
@@ -206,7 +211,7 @@ In addition to the information extracted from the user-agent, you can collect in
 the client's IP address.
 
 To use this feature, you have to install and configure this package: [https://github.com/stevebauman/location](https://github.com/stevebauman/location).
-Then, enable the IP address geolocation in the `logins.php` configuration file.
+Then, enable IP address geolocation in the `logins.php` configuration file.
 
 By default, this is how the client's IP address is determined:
 
@@ -220,7 +225,7 @@ return $_SERVER['HTTP_CF_CONNECTING_IP'] ?? request()->ip();
 You can define your own IP address resolution logic, by passing a closure to the `getIpAddressUsing()` static method of
 the `ALajusticia\Logins\Logins` class, and returning the resolved IP address.
 
-Call it in the `boot()` method of your `App\Providers\AppServiceProvider`:
+Call it in the `boot()` method of a service provider, for example in your `App\Providers\AppServiceProvider`:
 
 ```php
 \ALajusticia\Logins\Logins::getIpAddressUsing(function () {
@@ -232,10 +237,10 @@ Call it in the `boot()` method of your `App\Providers\AppServiceProvider`:
 
 ### LoggedIn
 
-On a new login, you can listen to the event `ALajusticia\Logins\Events\LoggedIn`.
+On a new login, you can listen to the `ALajusticia\Logins\Events\LoggedIn` event.
 
-It receives the authenticated model (in `$authenticatable` property) and a `ALajusticia\Logins\RequestContext` object 
-(in `$context` property) containing all the information collected on the request:
+It receives the authenticated model (in `$authenticatable` property) and the `ALajusticia\Logins\RequestContext` object
+(in `$context` property) containing all the information collected about the request:
 
 ```php
 use ALajusticia\Logins\Events\LoggedIn;
@@ -259,7 +264,7 @@ Event::listen(function (LoggedIn $event) {
 
 ## Notifications
 
-If you want to send a notification to your users when a new login occurs with their account, pass a notification class
+If you want to send a notification to your users when new access to their account occurs, pass a notification class
 to the `new_login_notification` option in the `logins.php` configuration file.
 
 Laravel Logins comes with a ready-to-use notification (`ALajusticia\Logins\Notifications\NewLogin`),
