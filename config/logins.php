@@ -12,7 +12,7 @@ return [
     |
     | The database connection to use to save the logins, this is optional.
     |
-    | If not provided, wil use the default database connection of your
+    | If not provided, will use the default database connection of your
     | application.
     |
     */

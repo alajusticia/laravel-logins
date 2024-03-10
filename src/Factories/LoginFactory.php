@@ -14,6 +14,7 @@ class LoginFactory
     public static function buildFromLogin(
         RequestContext $context,
         string $sessionId,
+        string $guard,
         Authenticatable $user,
         bool $remember,
     ): Login
@@ -27,13 +28,13 @@ class LoginFactory
 
         // Set the expiration date based on whether it is a remembered login or not
         if ($remember) {
-            if ($rememberTokenLifetime = Config::get('logins.remember_token_lifetime')) {
+            if ($rememberTokenLifetime = Config::get('auth.guards.' . $guard . '', Config::get('logins.remember_token_lifetime'))) {
                 $login->expiresAt(Carbon::now()->addDays($rememberTokenLifetime));
             } else {
                 $login->expiresAt(null);
             }
         } else {
-            $login->expiresAt(Carbon::now()->addMinutes(config('session.lifetime')));
+            $login->expiresAt(Carbon::now()->addMinutes(Config::get('session.lifetime')));
         }
 
         return $login;

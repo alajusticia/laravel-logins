@@ -4,11 +4,9 @@ namespace ALajusticia\Logins;
 
 use ALajusticia\Logins\Events\LoggedIn;
 use ALajusticia\Logins\Factories\LoginFactory;
-use ALajusticia\Logins\Models\Login;
-use Illuminate\Auth\Recaller;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
 
 class Logins
@@ -55,13 +53,14 @@ class Logins
      */
     public static function ipGeolocationEnabled(): bool
     {
-        $environments = config('logins.ip_geolocation.environments');
+        $environments = Config::get('logins.ip_geolocation.environments');
 
         return ! empty($environments) && App::environment($environments);
     }
 
     public static function trackLoginFromSession(
         string $sessionId,
+        string $guard,
         Authenticatable $user,
         bool $remember = false
     ): void
@@ -71,7 +70,7 @@ class Logins
 
         // Build a new login
         $login = LoginFactory::buildFromLogin(
-            $context, $sessionId, $user, $remember
+            $context, $sessionId, $guard, $user, $remember
         );
 
         // Attach the login to the user and save it

@@ -1,8 +1,8 @@
 # Laravel Logins 🔑
 
-- Track each login, attaching information of the device (device type, device name, OS, browser, IP address) and the context (date, location)
-- Save this information in your database, allowing you to display it in user's account
-- Notify users on new login, emailing them with the information collected
+- Track each login, attaching information about the device (device type, device name, OS, browser, IP address) and the context (date, location)
+- Save this information in your database, allowing you to display it in the user's account
+- Notify users of a new login, along with the information collected
 - Offer your users the ability to log out a specific device, all the devices except the current one, or all at once.
 
 _____

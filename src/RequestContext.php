@@ -2,8 +2,9 @@
 
 namespace ALajusticia\Logins;
 
-use ALajusticia\Logins\Factories\ParserFactory;
 use ALajusticia\Logins\Contracts\UserAgentParser;
+use ALajusticia\Logins\Factories\ParserFactory;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
 use Stevebauman\Location\Facades\Location;
 use Stevebauman\Location\Position;
@@ -31,7 +32,7 @@ class RequestContext
 
         if ($parseUserAgent) {
             // Initialize the parser
-            $this->parser = ParserFactory::build(config('logins.parser'));
+            $this->parser = ParserFactory::build(Config::get('logins.parser'));
         }
     }
 

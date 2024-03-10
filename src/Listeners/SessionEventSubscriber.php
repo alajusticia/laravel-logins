@@ -50,7 +50,7 @@ class SessionEventSubscriber
     public function handleSuccessfulLogin(\Illuminate\Auth\Events\Login $event): void
     {
         if (! Auth::viaRemember() && Logins::tracked($event->user)) {
-            Logins::trackLoginFromSession(session()->getId(), $event->user, $event->remember);
+            Logins::trackLoginFromSession(session()->getId(), $event->guard, $event->user, $event->remember);
         }
     }
 
