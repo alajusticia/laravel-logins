@@ -17,8 +17,8 @@ class SessionEventSubscriber
      */
     public function handleSuccessfulAuthentication(\Illuminate\Auth\Events\Authenticated $event): void
     {
-        // Session is destroyed on login to prevent session hijacking, and therefore its ID changes.
-        // This check is necessary because, depending on the session driver we used, the new session may not yet
+        // Session is ID changes on login to prevent session hijacking.
+        // This check is necessary because, depending on the session driver we used, the session update may not yet
         // have been persisted and the new session ID may not be available when the Login event is dispatched.
 
         if (Logins::tracked($event->user) && ! $event->user->current_login) {

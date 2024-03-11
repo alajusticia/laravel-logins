@@ -15,6 +15,7 @@ _____
   * [Configure the authentication guard](#configure-the-authentication-guard)
   * [Configure the user provider](#configure-the-user-provider)
   * [Laravel Sanctum](#laravel-sanctum)
+  * [Laravel Jetstream](#laravel-jetstream)
 * [Usage](#usage)
   * [Retrieving the logins](#retrieving-the-logins)
     * [Get all the logins](#get-all-the-logins)
@@ -138,6 +139,28 @@ In addition to sessions, Laravel Logins also support personal access tokens issu
 
 If Laravel Sanctum is installed after you've installed Laravel Logins, you will have to run the `logins:install` 
 command again to update your installation.
+
+### Laravel Jetstream
+
+If using Laravel Jetstream, you can stop using the `AuthenticateSession` middleware, as it is not necessary with Logins.
+
+In your `jetstream.php` configuration file:
+
+```php
+'auth_session' => null,
+```
+
+In your routes:
+
+```diff
+Route::middleware([
+    'auth:sanctum',
+-    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    // ...
+});
+```
 
 ## Usage
 
