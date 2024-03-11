@@ -3,6 +3,7 @@
 namespace ALajusticia\Logins;
 
 use Illuminate\Auth\EloquentUserProvider;
+use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 use Illuminate\Database\Eloquent\Model;
 
 class LoginsUserProvider extends EloquentUserProvider
@@ -29,5 +30,17 @@ class LoginsUserProvider extends EloquentUserProvider
         $login = $retrievedModel->logins->whereStrict('remember_token', $token)->first();
 
         return $login && hash_equals($login->remember_token, $token) ? $retrievedModel : null;
+    }
+
+    /**
+     * Update the "remember me" token for the given user.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @param  string  $token
+     * @return void
+     */
+    public function updateRememberToken(UserContract $user, $token)
+    {
+        $user->setRememberToken($token);
     }
 }

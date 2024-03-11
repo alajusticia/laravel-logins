@@ -35,7 +35,7 @@ trait HasLogins
     {
         $login = $loginId ? $this->logins()->find($loginId) : $this->current_login;
 
-        return $login ? !empty($login->revoke()) : false;
+        return $login && !empty($login->revoke());
     }
 
     /**
@@ -92,5 +92,21 @@ trait HasLogins
     {
         return in_array('Laravel\Sanctum\HasApiTokens', class_uses_recursive($this))
             && ! is_null($this->currentAccessToken());
+    }
+
+    /**
+     * Get the token value for the "remember me" session.
+     */
+    public function getRememberToken(): ?string
+    {
+        return session('login_remember_token');
+    }
+
+    /**
+     * Set the token value for the "remember me" session.
+     */
+    public function setRememberToken(string $value): void
+    {
+        session(['login_remember_token', $value]);
     }
 }

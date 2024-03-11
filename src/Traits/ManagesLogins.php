@@ -15,7 +15,6 @@ trait ManagesLogins
     {
         if ($sessionId === session()->getId()) {
             Auth::logout();
-            session()->invalidate();
         } else {
             session()->getHandler()->destroy($sessionId);
         }
