@@ -20,17 +20,29 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Remember token lifetime
+    | Sanctum token tracking
     |--------------------------------------------------------------------------
     |
-    | Here you can specify the lifetime of the remember tokens.
-    |
-    | Must be an integer representing the number of days, or null to keep the
-    | user authenticated indefinitely or until they manually log out.
+    | Set this to true if you want to enable Logins for Sanctum personal
+    | access tokens (when issuing tokens), not required to track stateful
+    | Sanctum authentications (like with Inertia.js).
     |
     */
+    'sanctum_token_tracking' => false,
 
-    'remember_token_lifetime' => 365, // 1 year
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sanctum token name patterns
+    |--------------------------------------------------------------------------
+    |
+    | Set patterns in this array if you want to enable Logins only for Sanctum
+    | personal access tokens whose name matches one of these patterns.
+    |
+    | To enable Logins for all tokens, leave the array empty.
+    |
+    */
+    'sanctum_token_name_patterns' => [],
 
     /*
     |--------------------------------------------------------------------------

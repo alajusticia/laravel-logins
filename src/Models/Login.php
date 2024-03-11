@@ -5,6 +5,7 @@ namespace ALajusticia\Logins\Models;
 use ALajusticia\Expirable\Traits\Expirable;
 use ALajusticia\Logins\Scopes\LoginsScope;
 use ALajusticia\Logins\Traits\ManagesLogins;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -87,7 +88,17 @@ class Login extends Model
     }
 
     /**
-     * Dynamicly add the "is_current" attribute.
+     * Get the device/token name.
+     */
+    protected function device(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => $value ?? $this->personal_access_token_name,
+        );
+    }
+
+    /**
+     * Get the "is_current" attribute.
      */
     public function getIsCurrentAttribute(): bool
     {

@@ -55,9 +55,11 @@ class LoginsServiceProvider extends ServiceProvider
             return new LoginsUserProvider($app['hash'], $config['model']);
         });
 
-        // Register event subscribers
+        // Register event listeners
         Event::subscribe('ALajusticia\Logins\Listeners\SessionEventSubscriber');
-        Event::subscribe('ALajusticia\Logins\Listeners\SanctumEventSubscriber');
+        if (Config::get('logins.sanctum_token_tracking')) {
+            Event::subscribe('ALajusticia\Logins\Listeners\SanctumEventSubscriber');
+        }
         if ($notificationClass = Config::get('logins.new_login_notification')) {
             Event::listen(function (LoggedIn $event) use ($notificationClass) {
                 $event->authenticatable->notify(new $notificationClass($event->context));

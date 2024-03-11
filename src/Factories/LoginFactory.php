@@ -28,7 +28,7 @@ class LoginFactory
 
         // Set the expiration date based on whether it is a remembered login or not
         if ($remember) {
-            if ($rememberTokenLifetime = Config::get('auth.guards.' . $guard . '', Config::get('logins.remember_token_lifetime'))) {
+            if ($rememberTokenLifetime = Config::get('auth.guards.' . $guard . '.remember', 576000)) { // Same default value as in the SessionGuard
                 $login->expiresAt(Carbon::now()->addDays($rememberTokenLifetime));
             } else {
                 $login->expiresAt(null);
@@ -48,6 +48,7 @@ class LoginFactory
         $login = self::getNewLoginWithContext($context);
 
         $login->personal_access_token_id = $token->id;
+        $login->personal_access_token_name = $token->name;
 
         return $login;
     }

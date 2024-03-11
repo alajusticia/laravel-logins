@@ -2,8 +2,9 @@
 
 namespace ALajusticia\Logins;
 
-use Illuminate\Support\Facades\Auth;
 use ALajusticia\Logins\Models\Login;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 
 class CurrentLogin
 {
@@ -18,7 +19,7 @@ class CurrentLogin
                     ->where('session_id', session()->getId())
                     ->first();
 
-            } elseif (Auth::user()->isAuthenticatedBySanctumToken()) {
+            } elseif (Config::get('logins.sanctum_token_tracking') && Auth::user()->isAuthenticatedBySanctumToken()) {
 
                 $this->currentLogin = $this->logins()
                     ->where('personal_access_token_id', Auth::user()->currentAccessToken()->id)

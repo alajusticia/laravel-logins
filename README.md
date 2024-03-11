@@ -3,8 +3,9 @@
 - Track each login, attaching information about the device (device type, device name, OS, browser, IP address) and the context (date, location)
 - Save this information in your database, allowing you to display it in the user's account
 - Notify users of a new login, along with the information collected
-- Offer your users the ability to log out a specific device, all the devices except the current one, or all at once.
+- Offer your users the ability to log out a specific device, all the devices except the current one, or all at once
 - Log out a device, without affecting the other remembered devices (each remembered session has its own token)
+- You can also enable tracking of Sanctum personal access tokens, useful when authenticating mobile apps for example
 
 _____
 
@@ -93,9 +94,8 @@ which one you want to use.
 ### Configure the authentication guard
 
 This package comes with a custom authentication guard (`ALajusticia\Logins\LoginsSessionGuard`) that extends the default
-Laravel session guard, only adding the code to delete the related login in the `logout()` method.
-This was necessary, to make sure we get the correct session ID before it is regenerated (listening to the Logout event 
-was not an option because session is regenerated before the event being dispatched).
+Laravel session guard, adding the logic to delete related logins in the `logout()`, `logoutCurrentDevice()` and
+`logoutOtherDevices()` methods.
 
 In the `guards` options of your `auth.php` configuration file, use the `logins` driver instead of the `session` driver:
 
@@ -134,23 +134,38 @@ In your `auth.php` configuration file, use the `logins` driver in the user provi
 
 ### Laravel Sanctum
 
-In addition to sessions, Laravel Logins also support personal access tokens issued by Laravel Sanctum 
+In addition to sessions, Laravel Logins also supports tracking personal access tokens issued by Laravel Sanctum 
 (go to [Compatibility](#compatibility) section for information on supported versions).
 
+This feature can be useful if you are authenticating users from external apps, like mobile apps for example.
+
+To enable it, set `sanctum_token_tracking` to `true` in your `logins.php` configuration file.
 If Laravel Sanctum is installed after you've installed Laravel Logins, you will have to run the `logins:install` 
 command again to update your installation.
+
+When Sanctum tracking is enabled, the `LoggedIn` event is dispatched everytime a token is issued. Also, logins related
+to tokens are listed and managed the same way we manage sessions. This implies that, when calling `logoutAll()` method
+for example, all sessions AND all personal access tokens will be deleted. This may not be the behavior you want if you
+have mixed use cases, and you're also issuing Sanctum personal access tokens for other separated purposes, like API
+access. If so, you can execute the `logoutAll` and `logoutOthers` actions only on personal access tokens that have a
+name matching the pattern passed in argument of the `logout()` and `logoutAll()` methods, it will perform the delete
+query using the `LIKE` operator:
+
+```php
+
+```
 
 ### Laravel Jetstream
 
 If using Laravel Jetstream, you can stop using the `AuthenticateSession` middleware, as it is not necessary with Logins.
 
-In your `jetstream.php` configuration file:
+In your `jetstream.php` configuration file, set `auth_session` to `null`:
 
 ```php
 'auth_session' => null,
 ```
 
-In your routes:
+In your routes, remove the middleware:
 
 ```diff
 Route::middleware([
@@ -220,7 +235,11 @@ Useful when, for example, the user's password is modified, and we want to log ou
 This feature destroys all sessions, even the remembered ones.
 
 ```php
+// Destroy all sessions AND Sanctum tokens
 request()->user()->logoutAll();
+
+// Destroy all sessions AND Sanctum tokens that have a name matching the pattern
+request()->user()->logoutAll('mobile_app_*');
 ```
 
 #### Revoke all the logins except the current one
