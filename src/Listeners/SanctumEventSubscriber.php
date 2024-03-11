@@ -29,8 +29,8 @@ class SanctumEventSubscriber
             $sanctumTokenNamePattern = Config::get('logins.sanctum_token_name_regex');
 
             if (
-                !empty($sanctumTokenNamePattern)
-                && !Str::of($personalAccessToken->name)->isMatch($sanctumTokenNamePattern)
+                ! empty($sanctumTokenNamePattern)
+                && ! Str::of($personalAccessToken->name)->isMatch($sanctumTokenNamePattern)
             ) {
                 return;
             }
