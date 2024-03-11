@@ -6,6 +6,15 @@ use Illuminate\Auth\SessionGuard;
 
 class LoginsSessionGuard extends SessionGuard
 {
+    protected function deleteCurrentLogin() {
+        $user = $this->user();
+
+        if ($user && Logins::tracked($user)) {
+            // Delete login
+            $user->logins()->where('session_id', $this->session->getId())->delete();
+        }
+    }
+
     /**
      * Log the user out of the application.
      *
@@ -13,18 +22,23 @@ class LoginsSessionGuard extends SessionGuard
      */
     public function logout()
     {
-        // To be able to link the old session to its corresponding login,
-        // we needed to extend the session guard and override the logout() method.
-        // This way, we make sure we get the correct session ID before it is regenerated.
-
-        $user = $this->user();
-
-        if ($user && Logins::tracked($user)) {
-            // Delete login
-            $user->logins()->where('session_id', $this->session->getId())->delete();
-        }
+        $this->deleteCurrentLogin();
 
         parent::logout();
+    }
+
+    /**
+     * Log the user out of the application on their current device only.
+     *
+     * This method does not cycle the "remember" token.
+     *
+     * @return void
+     */
+    public function logoutCurrentDevice()
+    {
+        $this->deleteCurrentLogin();
+
+        parent::logoutCurrentDevice();
     }
 
     /**
