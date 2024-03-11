@@ -7,6 +7,8 @@ use ALajusticia\Logins\Factories\LoginFactory;
 use ALajusticia\Logins\Logins;
 use ALajusticia\Logins\RequestContext;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\PersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
 
@@ -23,6 +25,15 @@ class SanctumEventSubscriber
         $model = $personalAccessToken->tokenable;
 
         if (Logins::tracked($model)) {
+
+            $sanctumTokenNamePattern = Config::get('logins.sanctum_token_name_regex');
+
+            if (
+                !empty($sanctumTokenNamePattern)
+                && !Str::of($personalAccessToken->name)->isMatch($sanctumTokenNamePattern)
+            ) {
+                return;
+            }
 
             // Get as much information as possible about the request
             $context = new RequestContext();

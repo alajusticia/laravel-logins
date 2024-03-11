@@ -12,7 +12,7 @@ return [
     |
     | The database connection to use to save the logins, this is optional.
     |
-    | If not provided, will use the default database connection of your
+    | If not provided, it will use the default database connection of your
     | application.
     |
     */
@@ -24,8 +24,10 @@ return [
     |--------------------------------------------------------------------------
     |
     | Set this to true if you want to enable Logins for Sanctum personal
-    | access tokens (when issuing tokens), not required to track stateful
-    | Sanctum authentications (like with Inertia.js).
+    | access tokens (when issuing tokens).
+    |
+    | Note: This is not required to track stateful Sanctum authentications
+    | (like with Inertia.js).
     |
     */
     'sanctum_token_tracking' => false,
@@ -36,13 +38,14 @@ return [
     | Sanctum token name patterns
     |--------------------------------------------------------------------------
     |
-    | Set patterns in this array if you want to enable Logins only for Sanctum
-    | personal access tokens whose name matches one of these patterns.
+    | When tracking is enabled for Sanctum personal access tokens, you can
+    | define a regular expression if you want to enable it only for tokens
+    | whose name matches the defined pattern.
     |
-    | To enable Logins for all tokens, leave the array empty.
+    | To enable Logins for all tokens, leave this empty.
     |
     */
-    'sanctum_token_name_patterns' => [],
+    'sanctum_token_name_regex' => '',
 
     /*
     |--------------------------------------------------------------------------

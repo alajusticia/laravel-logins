@@ -147,12 +147,11 @@ When Sanctum tracking is enabled, the `LoggedIn` event is dispatched everytime a
 to tokens are listed and managed the same way we manage sessions. This implies that, when calling `logoutAll()` method
 for example, all sessions AND all personal access tokens will be deleted. This may not be the behavior you want if you
 have mixed use cases, and you're also issuing Sanctum personal access tokens for other separated purposes, like API
-access. If so, you can execute the `logoutAll` and `logoutOthers` actions only on personal access tokens that have a
-name matching the pattern passed in argument of the `logout()` and `logoutAll()` methods, it will perform the delete
-query using the `LIKE` operator:
+access. If so, you can define a regular expression in `sanctum_token_name_regex` option of your `logins.php`
+configuration file, and only the tokens whose name matches the defined pattern will be tracked as "logins":
 
 ```php
-
+'sanctum_token_name_regex' => '/^mobile_app_/',
 ```
 
 ### Laravel Jetstream
@@ -230,16 +229,11 @@ request()->user()->logout(); // Revoke the current login
 #### Revoke all the logins
 
 We can destroy all the sessions and revoke all the Sanctum tokens by using the `logoutAll` method. 
-Useful when, for example, the user's password is modified, and we want to log out all the devices.
 
 This feature destroys all sessions, even the remembered ones.
 
 ```php
-// Destroy all sessions AND Sanctum tokens
 request()->user()->logoutAll();
-
-// Destroy all sessions AND Sanctum tokens that have a name matching the pattern
-request()->user()->logoutAll('mobile_app_*');
 ```
 
 #### Revoke all the logins except the current one
