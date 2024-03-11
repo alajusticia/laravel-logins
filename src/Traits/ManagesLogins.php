@@ -3,7 +3,6 @@
 namespace ALajusticia\Logins\Traits;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Laravel\Sanctum\PersonalAccessToken;
 
