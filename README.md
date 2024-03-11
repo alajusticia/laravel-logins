@@ -47,7 +47,7 @@ _____
 Install the package with composer:
 
 ```bash
-composer require alajusticia/logins
+composer require alajusticia/laravel-logins
 ```
 
 Publish the configuration file (`logins.php`) with:

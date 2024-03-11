@@ -85,7 +85,7 @@ return [
         | Indicate here an array of environments for which you want to enable
         | IP address geolocation.
         |
-        | Empty it to totally disable the feature.
+        | Leave it empty to totally disable the geolocation.
         |
         */
 
