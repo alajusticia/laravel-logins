@@ -13,7 +13,7 @@ trait ManagesLogins
      */
     protected function destroySession(string $sessionId): void
     {
-        if ($sessionId === session()->getId()) {
+        if (!app()->runningInConsole() && request()->hasSession() && $sessionId === session()->getId()) {
             Auth::logout();
         } else {
             session()->getHandler()->destroy($sessionId);

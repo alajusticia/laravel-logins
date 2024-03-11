@@ -111,8 +111,12 @@ In the `guards` options of your `auth.php` configuration file, use the `logins` 
 
 ### Configure the user provider
 
-This package comes with a modified Eloquent user provider that retrieve remembered users from the logins table, allowing 
-each session to have its own remember token and giving us the ability to revoke sessions individually.
+This package comes with a modified Eloquent user provider that retrieves remembered users from the logins table,
+allowing each session to have its own remember token and giving us the ability to revoke sessions individually.
+
+When using Laravel Logins, you DON'T need to use the `Illuminate\Session\Middleware\AuthenticateSession` middleware for
+the "Logout other devices" feature to work. Each login having its own remember token, we don't have to rehash the user
+password or to add overhead to check the password hash at every request using the AuthenticateSession middleware.
 
 In your `auth.php` configuration file, use the `logins` driver in the user providers list for the users you want to enable logins:
 

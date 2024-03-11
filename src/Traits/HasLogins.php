@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 
 trait HasLogins
 {
+    public ?string $loginRememberToken = null;
+
     /**
      * Get all the user's logins.
      */
@@ -96,17 +98,22 @@ trait HasLogins
 
     /**
      * Get the token value for the "remember me" session.
+     *
+     * @return string|null
      */
-    public function getRememberToken(): ?string
+    public function getRememberToken()
     {
-        return session('login_remember_token');
+        return $this->loginRememberToken;
     }
 
     /**
      * Set the token value for the "remember me" session.
+     *
+     * @param  string  $value
+     * @return void
      */
-    public function setRememberToken(string $value): void
+    public function setRememberToken($value)
     {
-        session(['login_remember_token', $value]);
+        $this->loginRememberToken = $value;
     }
 }
