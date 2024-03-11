@@ -317,7 +317,6 @@ This package includes translations for English, Spanish and French.
 If you want to customize the translations or add new ones, you can publish the language files by running this command:
 
 ```bash
-php artisan vendor:publish --provider="ALajusticia\Localized\LocalizedServiceProvider" --tag="lang"
 php artisan vendor:publish --tag="logins-lang"
 ```
 
