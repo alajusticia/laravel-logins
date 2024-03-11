@@ -31,6 +31,7 @@ _____
   * [LoggedIn](#loggedin)
 * [Notifications](#notifications)
 * [Translations](#translations)
+* [Purge expired logins](#purge-expired-logins)
 * [License](#license)
 
 ## Compatibility
@@ -318,6 +319,20 @@ If you want to customize the translations or add new ones, you can publish the l
 
 ```bash
 php artisan vendor:publish --tag="logins-lang"
+```
+
+## Purge expired logins
+
+This packages uses [Laravel Expirable](https://github.com/alajusticia/laravel-expirable) to make the Login model
+expirable.
+
+To purge expired logins, you can add the `ALajusticia\Logins\Models\Login` class to the `purge` array of the
+`expirable.php` configuration file:
+
+```php
+    'purge' => [
+        \ALajusticia\Logins\Models\Login::class,
+    ],
 ```
 
 ## License
