@@ -31,8 +31,8 @@ class NewLogin extends Notification
     public function toMail(mixed $notifiable): MailMessage
     {
         $deviceType = match ($this->context->parser()->getDeviceType()) {
-            'desktop', 'mobile', 'phone', 'tablet' => __('logins::notifications.new_login.device_types.' . $this->context->parser()->getDeviceType()),
-            default => __('logins::notifications.new_login.device_types.unknown'),
+            'desktop', 'mobile', 'phone', 'tablet' => __('alajusticia/logins::notifications.new_login.device_types.' . $this->context->parser()->getDeviceType()),
+            default => __('alajusticia/logins::notifications.new_login.device_types.unknown'),
         };
 
         $mailMessage = (new MailMessage)

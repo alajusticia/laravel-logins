@@ -14,10 +14,12 @@ trait ManagesLogins
      */
     protected function destroySession(string $sessionId): void
     {
-        if (!app()->runningInConsole() && request()->hasSession() && $sessionId === session()->getId()) {
-            Auth::logout();
-        } else {
-            session()->getHandler()->destroy($sessionId);
+        session()->getHandler()->destroy($sessionId);
+
+        if (! app()->runningInConsole() && request()->hasSession() && $sessionId === session()->getId()) {
+            // Destroying current session
+            session()->invalidate();
+            session()->regenerateToken();
         }
     }
 
@@ -35,7 +37,7 @@ trait ManagesLogins
             // Convert parameters into an array if needed
             $personalAccessTokenIds = is_array($personalAccessTokenIds) ? $personalAccessTokenIds : func_get_args();
 
-            if (!empty($personalAccessTokenIds)) {
+            if (! empty($personalAccessTokenIds)) {
                 PersonalAccessToken::whereIn('id', $personalAccessTokenIds)
                     ->delete();
             }
