@@ -17,28 +17,7 @@ class SessionEventSubscriber
      */
     public function handleSuccessfulAuthentication(\Illuminate\Auth\Events\Authenticated $event): void
     {
-        // Session is ID changes on login to prevent session hijacking.
-        // This check is necessary because the new session ID may not yet be available when the Login event is dispatched.
-
-        if (Logins::tracked($event->user) && ! $event->user->current_login) {
-
-            // We don't already track the session ID
-
-            if ($loginId = session('login_id')) {
-                // Just logged in
-
-                Login::where('id', $loginId)->update(['session_id' => session()->getId()]);
-
-            } elseif ($recallerCookie = request()->cookies->get(Auth::guard()->getRecallerName())) {
-                // Authenticated via remember token
-
-                $recaller = new Recaller($recallerCookie);
-
-                Login::where('remember_token', $recaller->token())->update([
-                    'session_id' => request()->session()->getId()
-                ]);
-            }
-        }
+        Logins::checkSessionId($event->user);
     }
 
     /**

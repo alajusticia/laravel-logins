@@ -55,11 +55,11 @@ class SanctumEventSubscriber
     /**
      * Register the listeners for the subscriber.
      */
-    public function subscribe(Dispatcher $events): void
-    {
-        $events->listen(
-            'eloquent.created: ' . Sanctum::personalAccessTokenModel(),
-            [SanctumEventSubscriber::class, 'handlePersonalAccessTokenCreation']
-        );
-    }
+//    public function subscribe(Dispatcher $events): void
+//    {
+//        $events->listen(
+//            'eloquent.created: ' . Sanctum::personalAccessTokenModel(),
+//            [SanctumEventSubscriber::class, 'handlePersonalAccessTokenCreation']
+//        );
+//    }
 }

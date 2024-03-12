@@ -12,6 +12,11 @@ class CurrentLogin
 
     public function __construct()
     {
+        $this->loadCurrentLogin();
+    }
+
+    public function loadCurrentLogin(): void
+    {
         if (Auth::user() && Logins::tracked(Auth::user()) && ! $this->currentLogin) {
             if (Auth::user()->isAuthenticatedBySession()) {
 

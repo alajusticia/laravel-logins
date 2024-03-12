@@ -29,7 +29,12 @@ class LoginsUserProvider extends EloquentUserProvider
 
         $login = $retrievedModel->logins->whereStrict('remember_token', $token)->first();
 
-        return $login && hash_equals($login->remember_token, $token) ? $retrievedModel : null;
+        if ($login && hash_equals($login->remember_token, $token)) {
+            session(['login_id' => $login->id]);
+            return $retrievedModel;
+        }
+
+        return null;
     }
 
     /**

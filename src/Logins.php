@@ -4,8 +4,11 @@ namespace ALajusticia\Logins;
 
 use ALajusticia\Logins\Events\LoggedIn;
 use ALajusticia\Logins\Factories\LoginFactory;
+use ALajusticia\Logins\Models\Login;
+use Illuminate\Auth\Recaller;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
 
@@ -76,9 +79,41 @@ class Logins
         // Attach the login to the user and save it
         $user->logins()->save($login);
 
-        session()->put('login_id', $login->id);
+        session(['login_id' => $login->id]);
 
         // Dispatch event
         event(new LoggedIn($user, $context));
+    }
+
+    public static function checkSessionId($user)
+    {
+        // Session is ID changes on login to prevent session hijacking.
+        // This check is necessary because the new session ID may not yet be available when the Login event is dispatched.
+
+        if (Logins::tracked($user) && ! $user->current_login) {
+
+            // We don't already track the session ID
+
+            $updated = 0;
+
+            if ($loginId = session('login_id')) {
+                // Just logged in
+
+                $updated = Login::where('id', $loginId)->update(['session_id' => session()->getId()]);
+
+            } elseif ($recallerCookie = request()->cookies->get(Auth::guard()->getRecallerName())) {
+                // Authenticated via remember token
+
+                $recaller = new Recaller($recallerCookie);
+
+                $updated = Login::where('remember_token', $recaller->token())->update([
+                    'session_id' => request()->session()->getId()
+                ]);
+            }
+
+            if ($updated > 0) {
+                app(CurrentLogin::class)->loadCurrentLogin();
+            }
+        }
     }
 }

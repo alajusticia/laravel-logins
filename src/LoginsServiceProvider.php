@@ -4,6 +4,8 @@ namespace ALajusticia\Logins;
 
 use ALajusticia\Logins\Commands\Install;
 use ALajusticia\Logins\Events\LoggedIn;
+use ALajusticia\Logins\Listeners\SanctumEventSubscriber;
+use ALajusticia\Logins\Listeners\SessionEventSubscriber;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
@@ -56,9 +58,9 @@ class LoginsServiceProvider extends ServiceProvider
         });
 
         // Register event listeners
-        Event::subscribe('ALajusticia\Logins\Listeners\SessionEventSubscriber');
+        Event::subscribe(SessionEventSubscriber::class);
         if (Config::get('logins.sanctum_token_tracking')) {
-            Event::subscribe('ALajusticia\Logins\Listeners\SanctumEventSubscriber');
+            Event::subscribe(SanctumEventSubscriber::class);
         }
         if ($notificationClass = Config::get('logins.new_login_notification')) {
             Event::listen(function (LoggedIn $event) use ($notificationClass) {
