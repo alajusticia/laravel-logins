@@ -19,7 +19,7 @@ return new class extends Migration
 
         Schema::table('logins', function (Blueprint $table) {
             $table->foreign('personal_access_token_id')
-                ->references('id')
+                ->references(app(Sanctum::personalAccessTokenModel())->getKeyName())
                 ->on(app(Sanctum::personalAccessTokenModel())->getTable())
                 ->cascadeOnDelete();
         });

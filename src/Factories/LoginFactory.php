@@ -7,7 +7,7 @@ use ALajusticia\Logins\RequestContext;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Config;
-use Laravel\Sanctum\PersonalAccessToken;
+use Laravel\Sanctum\Contracts\HasAbilities;
 
 class LoginFactory
 {
@@ -38,12 +38,12 @@ class LoginFactory
 
     public static function buildFromSanctumToken(
         RequestContext $context,
-        PersonalAccessToken $token
+        HasAbilities $token
     ): Login
     {
         $login = self::getNewLoginWithContext($context);
 
-        $login->personal_access_token_id = $token->id;
+        $login->personal_access_token_id = $token->getKey();
 
         if ($tokenExpiration = Config::get('sanctum.expiration')) {
             $login->expiresAt(Carbon::now()->addMinutes((int) $tokenExpiration));

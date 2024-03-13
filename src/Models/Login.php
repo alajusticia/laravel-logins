@@ -102,7 +102,7 @@ class Login extends Model
 
     public function personalAccessToken(): BelongsTo
     {
-        return $this->belongsTo(PersonalAccessToken::class, 'personal_access_token_id');
+        return $this->belongsTo(Sanctum::personalAccessTokenModel(), 'personal_access_token_id');
     }
 
     /**
@@ -118,7 +118,7 @@ class Login extends Model
         } elseif ($this->personal_access_token_id && request()->user()->isAuthenticatedBySanctumToken()) {
 
             // Compare Sanctum personal access token ID
-            return $this->personal_access_token_id === request()->user()->currentAccessToken()->id;
+            return $this->personal_access_token_id === request()->user()->currentAccessToken()->getKey();
         }
 
         return false;

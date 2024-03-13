@@ -27,7 +27,7 @@ class CurrentLogin
             } elseif (Config::get('logins.sanctum_token_tracking') && Auth::user()->isAuthenticatedBySanctumToken()) {
 
                 $this->currentLogin = $this->logins()
-                    ->where('personal_access_token_id', Auth::user()->currentAccessToken()->id)
+                    ->where('personal_access_token_id', Auth::user()->currentAccessToken()->getKey())
                     ->first();
 
             }

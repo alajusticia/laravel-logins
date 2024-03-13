@@ -61,7 +61,7 @@ trait HasLogins
             return $this->logins()
                         ->where(function (Builder $query) {
                             return $query
-                                ->where('personal_access_token_id', '!=', $this->currentAccessToken()->id)
+                                ->where('personal_access_token_id', '!=', $this->currentAccessToken()->getKey())
                                 ->orWhereNull('personal_access_token_id');
                         })
                         ->revoke();
