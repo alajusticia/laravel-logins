@@ -140,6 +140,8 @@ In addition to sessions, Laravel Logins also supports tracking personal access t
 
 This feature can be useful if you are authenticating users from external apps, like mobile apps for example.
 
+> ℹ️ You don't need to enable this if you only track stateful Sanctum authentications (like with Inertia.js).
+
 To enable it, set `sanctum_token_tracking` to `true` in your `logins.php` configuration file.
 If Laravel Sanctum is installed after you've installed Laravel Logins, you will have to run the `logins:install` 
 command again to update your installation.

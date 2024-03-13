@@ -44,7 +44,6 @@ class LoginFactory
         $login = self::getNewLoginWithContext($context);
 
         $login->personal_access_token_id = $token->id;
-        $login->personal_access_token_name = $token->name;
 
         if ($tokenExpiration = Config::get('sanctum.expiration')) {
             $login->expiresAt(Carbon::now()->addMinutes((int) $tokenExpiration));

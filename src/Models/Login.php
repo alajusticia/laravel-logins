@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
+use Laravel\Sanctum\PersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
 
 class Login extends Model
@@ -95,13 +96,13 @@ class Login extends Model
     protected function device(): Attribute
     {
         return Attribute::make(
-            get: fn (string $value) => ! empty($value) ? $value : $this->personal_access_token?->name,
+            get: fn (string $value) => ! empty($value) ? $value : $this->personalAccessToken?->name,
         );
     }
 
     public function personalAccessToken(): BelongsTo
     {
-        return $this->belongsTo(Sanctum::$personalAccessTokenModel, 'personal_access_token_id');
+        return $this->belongsTo(PersonalAccessToken::class, 'personal_access_token_id');
     }
 
     /**
