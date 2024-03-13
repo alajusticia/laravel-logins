@@ -31,6 +31,9 @@ class LoginsUserProvider extends EloquentUserProvider
 
         if ($login && hash_equals($login->remember_token, $token)) {
             session(['login_id' => $login->id]);
+
+            $login->update(['session_id' => null]);
+
             return $retrievedModel;
         }
 

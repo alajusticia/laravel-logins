@@ -37,7 +37,7 @@ class Logins
         if (static::$getIpAddressUsingCallback) {
             return call_user_func(static::$getIpAddressUsingCallback);
         } else {
-            // Supports Cloudflare proxy by checking if HTTP_CF_CONNECTING_IP header exists
+            // Support Cloudflare proxy by checking if HTTP_CF_CONNECTING_IP header exists
             // Fallback to built-in Laravel ip() method on Request
             return $_SERVER['HTTP_CF_CONNECTING_IP'] ?? Request::ip();
         }

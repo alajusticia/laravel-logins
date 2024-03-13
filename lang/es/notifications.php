@@ -18,7 +18,7 @@ return [
         'browser' => 'Navegador: :value',
         'ip_address' => 'Dirección IP: :value',
         'country' => 'País: :value',
-        'not_you' => '¿No eras tú? Si piensas que es una actividad sospechosa, te recomendamos que cambies tu contraseña inmediatamente para proteger tu cuenta.',
+        'not_you' => 'Si crees que se trata de una actividad sospechosa, te recomendamos que cambies tu contraseña inmediatamente para proteger tu cuenta.',
         'check_security' => 'Verificar la seguridad de tu cuenta',
     ],
 ];

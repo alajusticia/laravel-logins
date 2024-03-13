@@ -259,7 +259,7 @@ Then, enable IP address geolocation in the `logins.php` configuration file.
 By default, this is how the client's IP address is determined:
 
 ```php
-// Supports Cloudflare proxy by checking if HTTP_CF_CONNECTING_IP header exists
+// Support Cloudflare proxy by checking if HTTP_CF_CONNECTING_IP header exists
 // Fallback to built-in Laravel ip() method in Request
 
 return $_SERVER['HTTP_CF_CONNECTING_IP'] ?? request()->ip();

@@ -18,7 +18,7 @@ return [
         'browser' => 'Browser: **:value**',
         'ip_address' => 'IP address: **:value**',
         'country' => 'Country: **:value**',
-        'not_you' => 'Not you? If you think this is a suspicious activity, we recommend that you change your password immediately in order to protect your account.',
+        'not_you' => 'If you think this is a suspicious activity, you should change your password immediately to protect your account.',
         'check_security' => 'Check account security',
     ],
 ];

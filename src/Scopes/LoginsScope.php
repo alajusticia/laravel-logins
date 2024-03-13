@@ -28,19 +28,26 @@ class LoginsScope implements Scope
 
             if ($logins->isNotEmpty()) {
 
-                // Destroy sessions
-                foreach ($logins->pluck('session_id')->filter() as $sessionId) {
-                    $this->destroySession($sessionId);
+                $activeLogins = $logins->filter(function ($login) {
+                    return ! is_null($login->session_id) || ! is_null($login->personal_access_token_id);
+                });
+
+                if ($activeLogins->isNotEmpty()) {
+
+                    // Destroy sessions
+                    foreach ($logins->pluck('session_id')->filter() as $sessionId) {
+                        $this->destroySession($sessionId);
+                    }
+
+                    // Revoke Sanctum tokens
+                    $this->revokeSanctumTokens($logins->pluck('personal_access_token_id')->filter());
+
+                    // Delete logins
+                    return $builder->delete();
                 }
-
-                // Revoke Sanctum tokens
-                $this->revokeSanctumTokens($logins->pluck('personal_access_token_id')->filter());
-
-                // Delete logins
-                return $builder->delete();
             }
 
-            return false;
+            return 0;
         });
     }
 }

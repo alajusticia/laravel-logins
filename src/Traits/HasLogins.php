@@ -38,7 +38,7 @@ trait HasLogins
     {
         $login = $loginId ? $this->logins()->find($loginId) : $this->current_login;
 
-        return $login && !empty($login->revoke());
+        return $login && ! empty($login->revoke());
     }
 
     /**

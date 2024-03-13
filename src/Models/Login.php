@@ -136,14 +136,16 @@ class Login extends Model
             // Destroy session
             $this->destroySession($this->session_id);
 
+            return $this->delete();
+
         } elseif ($this->personal_access_token_id) {
 
             // Revoke Sanctum personal access token
             $this->revokeSanctumTokens($this->personal_access_token_id);
 
+            return $this->delete();
         }
 
-        // Delete login
-        return $this->delete();
+        return false;
     }
 }

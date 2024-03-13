@@ -39,7 +39,7 @@ class NewLogin extends Notification
 
         $mailMessage = (new MailMessage)
             ->subject(__('alajusticia/logins::notifications.new_login.subject'))
-            ->line(__('alajusticia/logins::notifications.new_login.title'))
+            ->greeting(__('alajusticia/logins::notifications.new_login.title'))
             ->line(__('alajusticia/logins::notifications.new_login.review_information'));
 
         $information = __('alajusticia/logins::notifications.new_login.device_type', ['value' => $deviceType]);
@@ -53,6 +53,10 @@ class NewLogin extends Notification
         $information .= '<br>' . __('alajusticia/logins::notifications.new_login.ip_address', ['value' => $this->context->ipAddress()]);
 
         if (! empty($this->context->location())) {
+            // I personally rely only on the country information, as the other information (region, city) can be very
+            // inaccurate, in particular with clients using mobile networks. Testing with my mobile network for example,
+            // the IP address is always located in the same wrong region.
+            // Feel free to use your own notification if you want to display other geolocation information.
             $country = $this->context->location()->countryName ?? $this->context->location()->countryCode;
             if ($country) {
                 $information .= '<br>' . __('alajusticia/logins::notifications.new_login.country', ['value' => $country]);

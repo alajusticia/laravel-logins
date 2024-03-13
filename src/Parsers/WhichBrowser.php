@@ -47,7 +47,7 @@ class WhichBrowser implements UserAgentParser
      */
     public function getPlatform(): ?string
     {
-        return !empty($this->parser->os->getFamily()) ? trim($this->parser->os->getFamily()) : null;
+        return ! empty($this->parser->os->getFamily()) ? trim($this->parser->os->getFamily()) : null;
     }
 
     /**

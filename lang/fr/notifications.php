@@ -18,7 +18,7 @@ return [
         'browser' => 'Navigateur : :value',
         'ip_address' => 'Adresse IP : :value',
         'country' => 'Pays : :value',
-        'not_you' => "Ce n'était pas vous ? Si vous pensez qu'il s'agit d'une activité suspecte, nous vous recommandons de modifier immédiatement votre mot de passe afin de protéger votre compte.",
+        'not_you' => "Si vous pensez qu'il s'agit d'une activité suspecte, nous vous recommandons de modifier immédiatement votre mot de passe afin de protéger votre compte.",
         'check_security' => 'Vérifier la sécurité du compte',
     ],
 ];
