@@ -96,7 +96,7 @@ class Login extends Model
     protected function device(): Attribute
     {
         return Attribute::make(
-            get: fn (string $value) => ! empty($value) ? $value : $this->personalAccessToken?->name,
+            get: fn (?string $value) => ! empty($value) ? $value : $this->personalAccessToken?->name,
         );
     }
 
