@@ -30,7 +30,7 @@
         "illuminate/queue": "^10.0|^11.0",
         "illuminate/session": "^10.0|^11.0",
         "illuminate/support": "^10.0|^11.0",
-        "nesbot/carbon": "^2.67"
+        "nesbot/carbon": "^2.67|^3.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.4.4",
