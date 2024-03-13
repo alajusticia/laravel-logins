@@ -39,7 +39,7 @@ class NewLogin extends Notification
 
         $mailMessage = (new MailMessage)
             ->subject(__('alajusticia/logins::notifications.new_login.subject'))
-            ->greeting(__('alajusticia/logins::notifications.new_login.title'))
+            ->line(__('alajusticia/logins::notifications.new_login.title'))
             ->line(__('alajusticia/logins::notifications.new_login.review_information'));
 
         $information = __('alajusticia/logins::notifications.new_login.device_type', ['value' => $deviceType]);
