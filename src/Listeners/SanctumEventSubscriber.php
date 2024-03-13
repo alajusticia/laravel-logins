@@ -36,7 +36,7 @@ class SanctumEventSubscriber
             }
 
             // Get as much information as possible about the request
-            $context = new RequestContext();
+            $context = new RequestContext($personalAccessToken->name);
 
             // Build a new login
             $login = LoginFactory::buildFromSanctumToken($context, $personalAccessToken);

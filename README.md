@@ -292,10 +292,12 @@ use Illuminate\Support\Facades\Event;
 Event::listen(function (LoggedIn $event) {
     
     // Methods available in RequestContext:
+    $event->context->date(); // Returns the date of the login (Carbon object)
     $event->context->userAgent(); // Returns the full, unparsed, User-Agent header
     $event->context->ipAddress(); // Returns the client's IP address
     $event->context->parser(); // Returns the parser used to parse the User-Agent header
     $event->context->location(); // Returns the location (Stevebauman\Location\Position object), if IP address geolocation enabled
+    $event->context->tokenName(); // Returns the personal access token name (if Sanctum stateless authentication)
     
     // Methods available in the parser:
     $this->context->parser()->getDevice(); // The name of the device

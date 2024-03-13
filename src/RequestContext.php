@@ -17,17 +17,19 @@ class RequestContext
     protected ?string $userAgent;
     protected ?string $ipAddress;
     protected Position|bool|null $location = null;
+    protected ?string $tokenName;
 
     /**
      * RequestContext constructor.
      *
      * @throws \Exception
      */
-    public function __construct(bool $parseUserAgent = true, bool $ipGeolocation = true)
+    public function __construct(?string $tokenName = null, bool $parseUserAgent = true, bool $ipGeolocation = true)
     {
         $this->date = Carbon::now();
         $this->userAgent = Request::userAgent();
         $this->ipAddress = Logins::ipAddress();
+        $this->tokenName = $tokenName;
 
         if ($ipGeolocation && Logins::ipGeolocationEnabled() && ! empty($this->ipAddress)) {
             $this->location = Location::get($this->ipAddress);
@@ -37,6 +39,11 @@ class RequestContext
             // Initialize the parser
             $this->parser = ParserFactory::build(Config::get('logins.parser'));
         }
+    }
+
+    public function date(): Carbon
+    {
+        return $this->date;
     }
 
     /**
@@ -69,5 +76,13 @@ class RequestContext
     public function location(): Position|bool|null
     {
         return $this->location;
+    }
+
+    /**
+     * Get the personal access token name.
+     */
+    public function tokenName(): ?string
+    {
+        return $this->tokenName;
     }
 }

@@ -5,6 +5,7 @@ namespace ALajusticia\Logins\Notifications;
 use ALajusticia\Logins\RequestContext;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\HtmlString;
 
@@ -32,25 +33,44 @@ class NewLogin extends Notification
      */
     public function toMail(mixed $notifiable): MailMessage
     {
-        $deviceType = match ($this->context->parser()->getDeviceType()) {
-            'desktop', 'mobile', 'phone', 'tablet' => __('alajusticia/logins::notifications.new_login.device_types.' . $this->context->parser()->getDeviceType()),
-            default => __('alajusticia/logins::notifications.new_login.device_types.unknown'),
-        };
-
         $mailMessage = (new MailMessage)
             ->subject(__('alajusticia/logins::notifications.new_login.subject'))
             ->line(__('alajusticia/logins::notifications.new_login.title'))
             ->line(__('alajusticia/logins::notifications.new_login.review_information'));
 
-        $information = __('alajusticia/logins::notifications.new_login.device_type', ['value' => $deviceType]);
+        $information = __('alajusticia/logins::notifications.new_login.date', [
+            'value' => $this->context->date()->locale(App::getLocale())->isoFormat('LLL'),
+        ]);
 
-        if (! empty($this->context->parser()->getDevice())) {
-            $information .= '<br>' . __('alajusticia/logins::notifications.new_login.device_name', ['value' => $this->context->parser()->getDevice()]);
+        if (in_array($this->context->parser()->getDeviceType(), ['desktop', 'mobile', 'phone', 'tablet'])) {
+            $information .= '<br>' . __('alajusticia/logins::notifications.new_login.device_type', [
+                'value' => $this->context->parser()->getDeviceType(),
+            ]);
         }
 
-        $information .= '<br>' . __('alajusticia/logins::notifications.new_login.platform', ['value' => $this->context->parser()->getPlatform()]);
-        $information .= '<br>' . __('alajusticia/logins::notifications.new_login.browser', ['value' => $this->context->parser()->getBrowser()]);
-        $information .= '<br>' . __('alajusticia/logins::notifications.new_login.ip_address', ['value' => $this->context->ipAddress()]);
+        if (! empty($this->context->parser()->getDevice())) {
+            $information .= '<br>' . __('alajusticia/logins::notifications.new_login.device_name', [
+                'value' => $this->context->parser()->getDevice(),
+            ]);
+        } elseif (! empty($this->context->tokenName())) {
+            $information .= '<br>' . __('alajusticia/logins::notifications.new_login.application', [
+                'value' => $this->context->tokenName(),
+            ]);
+        }
+
+        $information .= ! empty($this->context->parser()->getPlatform())
+            ? '<br>' . __('alajusticia/logins::notifications.new_login.platform', [
+                'value' => $this->context->parser()->getPlatform(),
+            ]) : '';
+
+        $information .= ! empty($this->context->parser()->getBrowser())
+            ? '<br>' . __('alajusticia/logins::notifications.new_login.browser', [
+                'value' => $this->context->parser()->getBrowser(),
+            ]) : '';
+
+        $information .= '<br>' . __('alajusticia/logins::notifications.new_login.ip_address', [
+            'value' => $this->context->ipAddress(),
+        ]);
 
         if (! empty($this->context->location())) {
             // I personally rely only on the country information, as the other information (region, city) can be very
@@ -59,7 +79,9 @@ class NewLogin extends Notification
             // Feel free to use your own notification if you want to display other geolocation information.
             $country = $this->context->location()->countryName ?? $this->context->location()->countryCode;
             if ($country) {
-                $information .= '<br>' . __('alajusticia/logins::notifications.new_login.country', ['value' => $country]);
+                $information .= '<br>' . __('alajusticia/logins::notifications.new_login.country', [
+                    'value' => $country,
+                ]);
             }
         }
 
