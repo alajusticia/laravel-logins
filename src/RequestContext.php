@@ -4,6 +4,7 @@ namespace ALajusticia\Logins;
 
 use ALajusticia\Logins\Contracts\UserAgentParser;
 use ALajusticia\Logins\Factories\ParserFactory;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
 use Stevebauman\Location\Facades\Location;
@@ -11,6 +12,7 @@ use Stevebauman\Location\Position;
 
 class RequestContext
 {
+    protected Carbon $date;
     protected ?UserAgentParser $parser = null;
     protected ?string $userAgent;
     protected ?string $ipAddress;
@@ -23,6 +25,7 @@ class RequestContext
      */
     public function __construct(bool $parseUserAgent = true, bool $ipGeolocation = true)
     {
+        $this->date = Carbon::now();
         $this->userAgent = Request::userAgent();
         $this->ipAddress = Logins::ipAddress();
 

@@ -26,16 +26,12 @@ class LoginFactory
             'remember_token' => $remember ? $user->getRememberToken() : null,
         ]);
 
-        // Set the expiration date based on whether it is a remembered login or not
-        if ($remember) {
-            if ($rememberTokenLifetime = Config::get('auth.guards.' . $guard . '.remember', 576000)) { // Same default value as in the SessionGuard
-                $login->expiresAt(Carbon::now()->addDays($rememberTokenLifetime));
-            } else {
-                $login->expiresAt(null);
-            }
-        } else {
-            $login->expiresAt(Carbon::now()->addMinutes(Config::get('session.lifetime')));
-        }
+        // Set the expiration date based on whether it's a remembered login or not
+        $login->expiresAt(
+            $remember
+                ? Carbon::now()->addMinutes((int) Config::get('auth.guards.' . $guard . '.remember', 576000)) // Same default value as in the SessionGuard
+                : Carbon::now()->addMinutes((int) Config::get('session.lifetime', 120))
+        );
 
         return $login;
     }
@@ -51,7 +47,7 @@ class LoginFactory
         $login->personal_access_token_name = $token->name;
 
         if ($tokenExpiration = Config::get('sanctum.expiration')) {
-            $login->expiresAt(Carbon::now()->addMinutes($tokenExpiration));
+            $login->expiresAt(Carbon::now()->addMinutes((int) $tokenExpiration));
         }
 
         return $login;

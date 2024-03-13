@@ -64,10 +64,6 @@ class LoginsServiceProvider extends ServiceProvider
         }
         if ($notificationClass = Config::get('logins.new_login_notification')) {
             Event::listen(function (LoggedIn $event) use ($notificationClass) {
-                if ($event->authenticatable->created_at && $event->authenticatable->created_at > now()->subMinutes(5)) {
-                    // Just to prevent sending login notification when auto login after user creation
-                    return;
-                }
                 $event->authenticatable->notify(new $notificationClass($event->context));
             });
         }

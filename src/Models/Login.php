@@ -7,9 +7,11 @@ use ALajusticia\Logins\Scopes\LoginsScope;
 use ALajusticia\Logins\Traits\ManagesLogins;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
+use Laravel\Sanctum\Sanctum;
 
 class Login extends Model
 {
@@ -93,8 +95,13 @@ class Login extends Model
     protected function device(): Attribute
     {
         return Attribute::make(
-            get: fn (string $value) => ! empty($value) ? $value : $this->personal_access_token_name,
+            get: fn (string $value) => ! empty($value) ? $value : $this->personal_access_token?->name,
         );
+    }
+
+    public function personalAccessToken(): BelongsTo
+    {
+        return $this->belongsTo(Sanctum::$personalAccessTokenModel, 'personal_access_token_id');
     }
 
     /**

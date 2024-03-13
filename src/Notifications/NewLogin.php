@@ -22,7 +22,9 @@ class NewLogin extends Notification
      */
     public function via(mixed $notifiable): array
     {
-        return ['mail'];
+        return $this->sendNotification($notifiable)
+            ? ['mail']
+            : [];
     }
 
     /**
@@ -66,5 +68,18 @@ class NewLogin extends Notification
         }
 
         return $mailMessage;
+    }
+
+    protected function sendNotification($notifiable): bool
+    {
+        if (! empty($notifiable->created_at)
+            && $notifiable->created_at > now()->subMinutes(5) // The user has just been created
+            && $notifiable->logins()->withExpired()->withTrashed()->count() === 1 // This is the first login
+        ) {
+            // Just to prevent sending login notification when auto login after user creation
+            return false;
+        }
+
+        return true;
     }
 }

@@ -7,7 +7,7 @@ use ALajusticia\Logins\Models\Login;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Laravel\Sanctum\HasApiTokens;
-use Laravel\Sanctum\PersonalAccessToken;
+use Laravel\Sanctum\Sanctum;
 
 trait HasLogins
 {
@@ -92,7 +92,7 @@ trait HasLogins
     public function isAuthenticatedBySanctumToken(): bool
     {
         return in_array(HasApiTokens::class, class_uses_recursive($this))
-            && $this->currentAccessToken() instanceof PersonalAccessToken;
+            && $this->currentAccessToken() instanceof Sanctum::$personalAccessTokenModel;
     }
 
     /**

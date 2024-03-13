@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string('session_id')->nullable();
             $table->string('remember_token')->nullable();
             $table->unsignedBigInteger('personal_access_token_id')->nullable();
-            $table->string('personal_access_token_name')->nullable();
             $table->timestamps();
             $table->expirable('expires_at');
             $table->softDeletes();
