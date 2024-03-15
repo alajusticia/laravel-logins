@@ -2,10 +2,12 @@
 
 namespace ALajusticia\Logins\Http\Livewire;
 
+use ALajusticia\Logins\CurrentLogin;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Fortify\Fortify;
 use Livewire\Component;
 
 class Logins extends Component
@@ -17,6 +19,13 @@ class Logins extends Component
      */
     public $confirmingLogout = false;
     public $confirmingLogoutSingle = false;
+
+    /**
+     * The selected login ID to revoke.
+     *
+     * @var int|null
+     */
+    public $selectedLoginId = null;
 
     /**
      * The user's current password.
@@ -44,13 +53,15 @@ class Logins extends Component
      *
      * @return void
      */
-    public function confirmLogoutSingle()
+    public function confirmLogoutSingle($loginId)
     {
         $this->password = '';
 
         $this->dispatch('confirming-logout-single-session');
 
         $this->confirmingLogoutSingle = true;
+
+        $this->selectedLoginId = $loginId;
     }
 
     /**
@@ -79,24 +90,34 @@ class Logins extends Component
     /**
      * Log out from other browser sessions.
      *
-     * @param  int  $loginId
      * @return void
      */
-    public function logoutSingleSession(int $loginId): void
+    public function logoutSingleSession(StatefulGuard $guard)
     {
-        $this->resetErrorBag();
+        if ($this->selectedLoginId) {
+            $this->resetErrorBag();
 
-        if (! Hash::check($this->password, Auth::user()->password)) {
-            throw ValidationException::withMessages([
-                'password' => [__('This password does not match our records.')],
-            ]);
+            if (!Hash::check($this->password, Auth::user()->password)) {
+                throw ValidationException::withMessages([
+                    'password' => [__('This password does not match our records.')],
+                ]);
+            }
+
+            $isCurrentLogin = app(CurrentLogin::class)->currentLogin
+                && app(CurrentLogin::class)->currentLogin->session_id === session()->getId();
+
+            if ($isCurrentLogin) {
+                $guard->logout();
+                $this->redirect(Fortify::redirects('logout', '/'));
+            } else {
+                Auth::user()->logout($this->selectedLoginId);
+
+                $this->confirmingLogoutSingle = false;
+                $this->selectedLoginId = null;
+
+                $this->dispatch('loggedOut');
+            }
         }
-
-        Auth::user()->logout($loginId);
-
-        $this->confirmingLogoutSingle = false;
-
-        $this->dispatch('loggedOut');
     }
 
     /**

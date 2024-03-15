@@ -41,7 +41,8 @@
         "jenssegers/agent": "^2.6",
         "buggregator/trap": "^1.4",
         "stevebauman/location": "^7.1",
-        "livewire/livewire": "^3.4"
+        "livewire/livewire": "^3.4",
+        "laravel/fortify": "^1.21"
     },
     "autoload": {
         "psr-4": {

@@ -49,7 +49,7 @@
                         </div>
 
                         <div class="ms-3">
-                            <button wire:click="confirmLogoutSingle" wire:loading.attr="disabled"
+                            <button wire:click="confirmLogoutSingle({{ $login->id }})" wire:loading.attr="disabled"
                                     class="underline text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 rounded-md">
                                 Logout
                             </button>
@@ -104,7 +104,7 @@
         </x-dialog-modal>
 
         <!-- Log Out Single Device Confirmation Modal -->
-        <x-dialog-modal wire:model.live="confirmingLogout">
+        <x-dialog-modal wire:model.live="confirmingLogoutSingle">
             <x-slot name="title">
                 {{ __('Log Out A Device') }}
             </x-slot>
