@@ -87,7 +87,7 @@ This package relies on a user-agent parser to extract the information.
 
 It supports the two most popular parsers:
 - WhichBrowser ([https://github.com/WhichBrowser/Parser-PHP](https://github.com/WhichBrowser/Parser-PHP))
-- Agent ([https://github.com/jenssegers/agent](https://github.com/jenssegers/agent)) (ℹ️ This one doesn't work with Laravel 11)
+- Agent ([https://github.com/jenssegers/agent](https://github.com/jenssegers/agent)) ⚠️ This one doesn't work with Laravel 11
 
 Before using Laravel Logins, you need to choose a supported parser, install it and indicate in the configuration file 
 which one you want to use.
