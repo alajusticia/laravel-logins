@@ -49,10 +49,20 @@
                         </div>
 
                         <div class="ms-3">
-                            <button wire:click="confirmLogoutSingle({{ $login->id }})" wire:loading.attr="disabled"
-                                    class="underline text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 rounded-md">
-                                Logout
-                            </button>
+                            @if ($login->is_current)
+                                <form method="POST" action="{{ route('logout') }}" x-data>
+                                    @csrf
+                                    <button @click.prevent="$root.submit();"
+                                            class="underline text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 rounded-md">
+                                        {{ __('Log Out') }}
+                                    </button>
+                                </form>
+                            @else
+                                <button wire:click="confirmLogoutSingle({{ $login->id }})" wire:loading.attr="disabled"
+                                        class="underline text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 rounded-md">
+                                    {{ __('Log Out') }}
+                                </button>
+                            @endif
                         </div>
                     </div>
                 @endforeach

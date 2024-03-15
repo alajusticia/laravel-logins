@@ -3,6 +3,7 @@
 namespace ALajusticia\Logins\Http\Livewire;
 
 use ALajusticia\Logins\CurrentLogin;
+use ALajusticia\Logins\Models\Login;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -92,7 +93,7 @@ class Logins extends Component
      *
      * @return void
      */
-    public function logoutSingleSession(StatefulGuard $guard)
+    public function logoutSingleSession()
     {
         if ($this->selectedLoginId) {
             $this->resetErrorBag();
@@ -103,20 +104,12 @@ class Logins extends Component
                 ]);
             }
 
-            $isCurrentLogin = app(CurrentLogin::class)->currentLogin
-                && app(CurrentLogin::class)->currentLogin->session_id === session()->getId();
+            Auth::user()->logout($this->selectedLoginId);
 
-            if ($isCurrentLogin) {
-                $guard->logout();
-                $this->redirect(Fortify::redirects('logout', '/'));
-            } else {
-                Auth::user()->logout($this->selectedLoginId);
+            $this->confirmingLogoutSingle = false;
+            $this->selectedLoginId = null;
 
-                $this->confirmingLogoutSingle = false;
-                $this->selectedLoginId = null;
-
-                $this->dispatch('loggedOut');
-            }
+            $this->dispatch('loggedOut');
         }
     }
 
