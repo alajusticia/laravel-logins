@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('remember_token')->nullable();
             $table->unsignedBigInteger('personal_access_token_id')->nullable();
             $table->timestamps();
+            $table->timestamp('last_activity_at')->useCurrent();
             $table->expirable('expires_at');
             $table->softDeletes();
         });

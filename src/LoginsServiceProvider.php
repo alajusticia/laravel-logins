@@ -3,6 +3,7 @@
 namespace ALajusticia\Logins;
 
 use ALajusticia\Logins\Commands\Install;
+use ALajusticia\Logins\Commands\Jetstream;
 use ALajusticia\Logins\Events\LoggedIn;
 use ALajusticia\Logins\Listeners\SanctumEventSubscriber;
 use ALajusticia\Logins\Listeners\SessionEventSubscriber;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class LoginsServiceProvider extends ServiceProvider
 {
@@ -29,6 +31,7 @@ class LoginsServiceProvider extends ServiceProvider
         // Register commands
         $this->commands([
             Install::class,
+            Jetstream::class,
         ]);
 
         $this->app->singleton(CurrentLogin::class, function (Application $app) {
@@ -74,12 +77,14 @@ class LoginsServiceProvider extends ServiceProvider
         });
 
         // Load translations
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'alajusticia/logins');
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'logins');
 
         // Allow publishing translations
         $this->publishes([
             __DIR__.'/../lang' => $this->app->langPath('vendor/alajusticia/logins'),
         ], 'logins-lang');
+
+        Livewire::component('logins', \ALajusticia\Logins\Http\Livewire\Logins::class);
     }
 
     /**

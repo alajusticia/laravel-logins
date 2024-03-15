@@ -23,7 +23,12 @@ class WhichBrowser implements UserAgentParser
      */
     public function getDevice(): ?string
     {
-        return trim($this->parser->device->toString()) ?: $this->getDeviceByManufacturerAndModel();
+        $device = trim($this->parser->device->toString()) ?: $this->getDeviceByManufacturerAndModel();
+
+        return match ($device) {
+            'Apple Macintosh' => 'Apple',
+            default => $device,
+        };
     }
 
     /**

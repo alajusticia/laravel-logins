@@ -52,7 +52,9 @@ class Login extends Model
      * @var array
      */
     protected $appends = [
+        'label',
         'is_current',
+        'last_active',
     ];
 
     /**
@@ -61,6 +63,7 @@ class Login extends Model
      * @var array
      */
     protected $casts = [
+        'last_activity_at' => 'datetime',
         'location' => 'array',
     ];
 
@@ -122,6 +125,28 @@ class Login extends Model
         }
 
         return false;
+    }
+
+    /**
+     * Get the last activity.
+     */
+    protected function getLastActiveAttribute(): string
+    {
+        return $this->last_activity_at->diffForHumans();
+    }
+
+    /**
+     * Get the label of the login.
+     */
+    protected function getLabelAttribute(): string
+    {
+        $labelParts = [
+            $this->device,
+            $this->platform,
+            $this->browser,
+        ];
+
+        return implode(' - ', array_filter($labelParts));
     }
 
     /**

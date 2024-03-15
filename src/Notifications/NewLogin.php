@@ -34,41 +34,41 @@ class NewLogin extends Notification
     public function toMail(mixed $notifiable): MailMessage
     {
         $mailMessage = (new MailMessage)
-            ->subject(__('alajusticia/logins::notifications.new_login.subject'))
-            ->line(__('alajusticia/logins::notifications.new_login.title'))
-            ->line(__('alajusticia/logins::notifications.new_login.review_information'));
+            ->subject(__('logins::notifications.new_login.subject'))
+            ->line(__('logins::notifications.new_login.title'))
+            ->line(__('logins::notifications.new_login.review_information'));
 
-        $information = __('alajusticia/logins::notifications.new_login.date', [
+        $information = __('logins::notifications.new_login.date', [
             'value' => $this->context->date()->locale(App::getLocale())->isoFormat('LLL'),
         ]);
 
         if (in_array($this->context->parser()->getDeviceType(), ['desktop', 'mobile', 'phone', 'tablet'])) {
-            $information .= '<br>' . __('alajusticia/logins::notifications.new_login.device_type', [
+            $information .= '<br>' . __('logins::notifications.new_login.device_type', [
                 'value' => $this->context->parser()->getDeviceType(),
             ]);
         }
 
         if (! empty($this->context->parser()->getDevice())) {
-            $information .= '<br>' . __('alajusticia/logins::notifications.new_login.device_name', [
+            $information .= '<br>' . __('logins::notifications.new_login.device_name', [
                 'value' => $this->context->parser()->getDevice(),
             ]);
         } elseif (! empty($this->context->tokenName())) {
-            $information .= '<br>' . __('alajusticia/logins::notifications.new_login.application', [
+            $information .= '<br>' . __('logins::notifications.new_login.application', [
                 'value' => $this->context->tokenName(),
             ]);
         }
 
         $information .= ! empty($this->context->parser()->getPlatform())
-            ? '<br>' . __('alajusticia/logins::notifications.new_login.platform', [
+            ? '<br>' . __('logins::notifications.new_login.platform', [
                 'value' => $this->context->parser()->getPlatform(),
             ]) : '';
 
         $information .= ! empty($this->context->parser()->getBrowser())
-            ? '<br>' . __('alajusticia/logins::notifications.new_login.browser', [
+            ? '<br>' . __('logins::notifications.new_login.browser', [
                 'value' => $this->context->parser()->getBrowser(),
             ]) : '';
 
-        $information .= '<br>' . __('alajusticia/logins::notifications.new_login.ip_address', [
+        $information .= '<br>' . __('logins::notifications.new_login.ip_address', [
             'value' => $this->context->ipAddress(),
         ]);
 
@@ -79,7 +79,7 @@ class NewLogin extends Notification
             // Feel free to use your own notification if you want to display other geolocation information.
             $country = $this->context->location()->countryName ?? $this->context->location()->countryCode;
             if ($country) {
-                $information .= '<br>' . __('alajusticia/logins::notifications.new_login.country', [
+                $information .= '<br>' . __('logins::notifications.new_login.country', [
                     'value' => $country,
                 ]);
             }
@@ -87,10 +87,10 @@ class NewLogin extends Notification
 
         $mailMessage
             ->line(new HtmlString($information))
-            ->line(__('alajusticia/logins::notifications.new_login.not_you'));
+            ->line(__('logins::notifications.new_login.not_you'));
 
         if ($securityPageRoute = Config::get('logins.security_page_route')) {
-            $mailMessage->action(__('alajusticia/logins::notifications.new_login.check_security'), route($securityPageRoute));
+            $mailMessage->action(__('logins::notifications.new_login.check_security'), route($securityPageRoute));
         }
 
         return $mailMessage;

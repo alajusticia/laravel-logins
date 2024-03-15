@@ -87,33 +87,52 @@ class Logins
 
     public static function checkSessionId($user)
     {
-        // Session is ID changes on login to prevent session hijacking.
+        // Session ID changes on login to prevent session hijacking.
         // This check is necessary because the new session ID may not yet be available when the Login event is dispatched.
 
-        if (Logins::tracked($user) && ! $user->current_login) {
-
-            // We don't already track the session ID
+        if (Logins::tracked($user)) {
 
             $updated = 0;
 
-            if ($loginId = session('login_id')) {
-                // Just logged in
+            if (! $user->current_login) {
 
-                $updated = Login::where('id', $loginId)->update(['session_id' => session()->getId()]);
+                // We don't already track the session ID
 
-            } elseif ($recallerCookie = request()->cookies->get(Auth::guard()->getRecallerName())) {
-                // Authenticated via remember token
+                if ($loginId = session('login_id')) {
+                    // Just logged in
 
-                $recaller = new Recaller($recallerCookie);
+                    $updated = Login::where('id', $loginId)->update([
+                        'session_id' => session()->getId(),
+                        'last_activity_at' => now(),
+                    ]);
 
-                $updated = Login::where('remember_token', $recaller->token())->update([
-                    'session_id' => request()->session()->getId()
-                ]);
+                } elseif ($recallerCookie = request()->cookies->get(Auth::guard()->getRecallerName())) {
+                    // Authenticated via remember token
+
+                    $recaller = new Recaller($recallerCookie);
+
+                    $updated = Login::where('remember_token', $recaller->token())->update([
+                        'session_id' => request()->session()->getId(),
+                        'last_activity_at' => now(),
+                    ]);
+                }
             }
 
-            if ($updated > 0) {
-                app(CurrentLogin::class)->loadCurrentLogin();
+            app(CurrentLogin::class)->loadCurrentLogin();
+
+            if ($updated === 0) {
+                self::updateLastActivity();
             }
+        }
+    }
+
+    public static function updateLastActivity()
+    {
+        if ($currentLogin = app(CurrentLogin::class)->currentLogin) {
+            $currentLogin->update([
+                'ip_address' => self::ipAddress(),
+                'last_activity_at' => now(),
+            ]);
         }
     }
 }

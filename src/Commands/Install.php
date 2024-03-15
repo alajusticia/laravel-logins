@@ -2,8 +2,10 @@
 
 namespace ALajusticia\Logins\Commands;
 
+use ALajusticia\Logins\Helpers\JetstreamHelpers;
 use ALajusticia\Logins\Helpers\SanctumHelpers;
 use Illuminate\Console\Command;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 
 class Install extends Command
@@ -13,7 +15,7 @@ class Install extends Command
      *
      * @var string
      */
-    protected $signature = 'logins:install-prototype';
+    protected $signature = 'logins:install';
 
     /**
      * The console command description.
@@ -27,9 +29,9 @@ class Install extends Command
      */
     public function handle()
     {
-        if ($this->confirm('This will run the database migrations required for Laravel Logins. Continue?', true)) {
+        if ($this->confirm('This will run the database migrations and create the required files for Laravel Logins. Continue?', true)) {
 
-            $this->info('Installing...');
+            $this->line('Installing...' . "\n");
 
             $migrationPaths = [
                 'vendor/alajusticia/laravel-logins/database/migrations',
@@ -47,7 +49,16 @@ class Install extends Command
                 $options['--database'] = $databaseConnection;
             }
 
+            $this->comment('Running migrations...' . "\n");
+
             $this->call('migrate', $options);
+
+            if (JetstreamHelpers::jetstreamIsInstalled()) {
+                $this->comment('Creating files for Jetstream...' . "\n");
+
+                (new Filesystem)->ensureDirectoryExists(resource_path('views'));
+                copy(__DIR__.'/../../stubs/livewire/resources/views/logins.blade.php', resource_path('views/logins.blade.php'));
+            }
 
             $this->info('Installation was successful!');
         }

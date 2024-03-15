@@ -3,8 +3,6 @@
 namespace ALajusticia\Logins\Listeners;
 
 use ALajusticia\Logins\Logins;
-use ALajusticia\Logins\Models\Login;
-use Illuminate\Auth\Recaller;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Auth;
 
