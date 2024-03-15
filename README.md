@@ -7,6 +7,8 @@
 - Log out a device, without affecting the other remembered devices (each remembered session has its own token)
 - You can also enable tracking of Sanctum personal access tokens, useful when authenticating mobile apps for example
 
+![Screenshot of the notification sent on a new login](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-notification.png "New login notification")
+
 _____
 
 * [Compatibility](#compatibility)
@@ -181,7 +183,9 @@ Route::middleware([
 
 Also, if using the Jetstream with the Livewire stack, the installation command will copy a Livewire component in your
 project (if Jetstream has been installed after installing Logins, you will have to run the `logins:install`
-command again to update your installation).
+command again to update your installation):
+
+![Screenshot of the Livewire component](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-livewire-component.png "Logins Livewire component")
 
 Files will be copied in `app/Livewire/Logins.php` and `resources/views/livewire/logins.blade.php`.
 
