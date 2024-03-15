@@ -188,7 +188,7 @@ Files will be copied in `app/Livewire/Logins.php` and `resources/views/livewire/
 To use the component, replace the `LogoutOtherBrowserSessionsForm` component of Jetstream, in the profile page
 (`resources/views/profile/show.blade.php`) view, by the `Logins` component:
 
-```php
+```diff
 <div class="mt-10 sm:mt-0">
 -    @livewire('profile.logout-other-browser-sessions-form')
 +    @livewire('logins')
