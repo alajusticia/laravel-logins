@@ -3,7 +3,8 @@
     "description": "Sessions and Sanctum tokens tracking in Laravel apps, users notification on new login, multiple remember tokens, IP geolocation, User-Agent parser",
     "keywords": [
         "laravel",
-        "authentification",
+        "security",
+        "authentication",
         "user-agent",
         "login",
         "remember",
