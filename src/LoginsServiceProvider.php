@@ -82,8 +82,6 @@ class LoginsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../lang' => $this->app->langPath('vendor/alajusticia/logins'),
         ], 'logins-lang');
-
-        Livewire::component('logins', \ALajusticia\Logins\Http\Livewire\Logins::class);
     }
 
     /**

@@ -1,14 +1,11 @@
 <?php
 
-namespace ALajusticia\Logins\Http\Livewire;
+namespace App\Livewire;
 
-use ALajusticia\Logins\CurrentLogin;
-use ALajusticia\Logins\Models\Login;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Laravel\Fortify\Fortify;
 use Livewire\Component;
 
 class Logins extends Component
@@ -125,6 +122,6 @@ class Logins extends Component
 
     public function render()
     {
-        return view('logins');
+        return view('livewire.logins');
     }
 }

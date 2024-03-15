@@ -179,6 +179,24 @@ Route::middleware([
 });
 ```
 
+Also, if using the Jetstream with the Livewire stack, the installation command will copy a Livewire component in your
+project (if Jetstream has been installed after installing Logins, you will have to run the `logins:install`
+command again to update your installation).
+
+Files will be copied in `app/Livewire/Logins.php` and `resources/views/livewire/logins.blade.php`.
+
+To use the component, replace the `LogoutOtherBrowserSessionsForm` component of Jetstream, in the profile page
+(`resources/views/profile/show.blade.php`) view, by the `Logins` component:
+
+```php
+<div class="mt-10 sm:mt-0">
+-    @livewire('profile.logout-other-browser-sessions-form')
++    @livewire('logins')
+</div>
+```
+
+Feel free to modify the component to suit your needs.
+
 ## Usage
 
 The `ALajusticia\Logins\Traits\HasLogins` trait provides your authenticatable models with methods to retrieve and manage

@@ -2,8 +2,7 @@
 
 namespace ALajusticia\Logins\Commands;
 
-use ALajusticia\Logins\Helpers\JetstreamHelpers;
-use ALajusticia\Logins\Helpers\SanctumHelpers;
+use ALajusticia\Logins\Helpers;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
@@ -37,7 +36,7 @@ class Install extends Command
                 'vendor/alajusticia/laravel-logins/database/migrations',
             ];
 
-            if (SanctumHelpers::sanctumIsInstalled()) {
+            if (Helpers::sanctumIsInstalled()) {
                 $migrationPaths[] = 'vendor/alajusticia/laravel-logins/database/migrations/sanctum';
             }
 
@@ -53,11 +52,18 @@ class Install extends Command
 
             $this->call('migrate', $options);
 
-            if (JetstreamHelpers::jetstreamIsInstalled()) {
-                $this->comment('Creating files for Jetstream...' . "\n");
+            if (
+                Helpers::jetstreamIsInstalled()
+                && Helpers::livewireIsInstalled()
+                && Config::get('jetstream.stack') === 'livewire'
+            ) {
+                $this->comment('Creating files for Jetstream with Livewire stack...' . "\n");
 
-                (new Filesystem)->ensureDirectoryExists(resource_path('views'));
-                copy(__DIR__.'/../../stubs/livewire/resources/views/logins.blade.php', resource_path('views/logins.blade.php'));
+                (new Filesystem)->ensureDirectoryExists(app_path('Livewire'));
+                (new Filesystem)->ensureDirectoryExists(resource_path('views/livewire'));
+
+                copy(__DIR__.'/../../stubs/jetstream-livewire/app/Livewire/Logins.php', app_path('Livewire/Logins.php'));
+                copy(__DIR__.'/../../stubs/jetstream-livewire/resources/views/livewire/logins.blade.php', resource_path('views/livewire/logins.blade.php'));
             }
 
             $this->info('Installation was successful!');

@@ -1,6 +1,6 @@
 <?php
 
-use ALajusticia\Logins\Helpers\SanctumHelpers;
+use ALajusticia\Logins\Helpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (! SanctumHelpers::sanctumIsInstalled()) {
+        if (! Helpers::sanctumIsInstalled()) {
             throw new \Exception('Laravel Sanctum is not installed!');
         }
 
