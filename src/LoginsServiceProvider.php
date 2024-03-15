@@ -31,7 +31,6 @@ class LoginsServiceProvider extends ServiceProvider
         // Register commands
         $this->commands([
             Install::class,
-            Jetstream::class,
         ]);
 
         $this->app->singleton(CurrentLogin::class, function (Application $app) {

@@ -1,6 +1,6 @@
 <x-action-section>
     <x-slot name="title">
-        {{ __('Browser Sessions') }}
+        {{ __('Sessions') }}
     </x-slot>
 
     <x-slot name="description">
@@ -40,12 +40,19 @@
                                     {{ $login->ip_address }},
 
                                     @if ($login->is_current)
-                                        <span class="text-green-500 font-semibold">{{ __('This device') }}</span>
+                                        <span class="text-green-600 dark:text-green-500 font-semibold">{{ __('This device') }}</span>
                                     @else
                                         {{ __('Last active') }} {{ $login->last_active }}
                                     @endif
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="ms-3">
+                            <button wire:click="confirmLogoutSingle" wire:loading.attr="disabled"
+                                    class="underline text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 rounded-md">
+                                Logout
+                            </button>
                         </div>
                     </div>
                 @endforeach
@@ -54,7 +61,7 @@
 
         <div class="flex items-center mt-5">
             <x-button wire:click="confirmLogout" wire:loading.attr="disabled">
-                {{ __('Log Out Other Browser Sessions') }}
+                {{ __('Log Out Other Devices') }}
             </x-button>
 
             <x-action-message class="ms-3" on="loggedOut">
@@ -65,11 +72,11 @@
         <!-- Log Out Other Devices Confirmation Modal -->
         <x-dialog-modal wire:model.live="confirmingLogout">
             <x-slot name="title">
-                {{ __('Log Out Other Browser Sessions') }}
+                {{ __('Log Out All Other Devices') }}
             </x-slot>
 
             <x-slot name="content">
-                {{ __('Please enter your password to confirm you would like to log out of your other browser sessions across all of your devices.') }}
+                {{ __('Please enter your password to confirm you would like to log out of your other sessions across all of your devices.') }}
 
                 <div class="mt-4" x-data="{}" x-on:confirming-logout-other-browser-sessions.window="setTimeout(() => $refs.password.focus(), 250)">
                     <x-input type="password" class="mt-1 block w-3/4"
@@ -77,7 +84,7 @@
                                 placeholder="{{ __('Password') }}"
                                 x-ref="password"
                                 wire:model="password"
-                                wire:keydown.enter="logoutOtherBrowserSessions" />
+                                wire:keydown.enter="logoutOtherDevices" />
 
                     <x-input-error for="password" class="mt-2" />
                 </div>
@@ -89,9 +96,43 @@
                 </x-secondary-button>
 
                 <x-button class="ms-3"
-                            wire:click="logoutOtherBrowserSessions"
+                            wire:click="logoutOtherDevices"
                             wire:loading.attr="disabled">
                     {{ __('Log Out Other Browser Sessions') }}
+                </x-button>
+            </x-slot>
+        </x-dialog-modal>
+
+        <!-- Log Out Single Device Confirmation Modal -->
+        <x-dialog-modal wire:model.live="confirmingLogout">
+            <x-slot name="title">
+                {{ __('Log Out A Device') }}
+            </x-slot>
+
+            <x-slot name="content">
+                {{ __('Please enter your password to confirm you would like to log out of your session on the selected device.') }}
+
+                <div class="mt-4" x-data="{}" x-on:confirming-logout-single-session.window="setTimeout(() => $refs.password.focus(), 250)">
+                    <x-input type="password" class="mt-1 block w-3/4"
+                             autocomplete="current-password"
+                             placeholder="{{ __('Password') }}"
+                             x-ref="password"
+                             wire:model="password"
+                             wire:keydown.enter="logoutSingleSession" />
+
+                    <x-input-error for="password" class="mt-2" />
+                </div>
+            </x-slot>
+
+            <x-slot name="footer">
+                <x-secondary-button wire:click="$toggle('confirmingLogoutSingle')" wire:loading.attr="disabled">
+                    {{ __('Cancel') }}
+                </x-secondary-button>
+
+                <x-button class="ms-3"
+                          wire:click="logoutSingleSession"
+                          wire:loading.attr="disabled">
+                    {{ __('Log Out') }}
                 </x-button>
             </x-slot>
         </x-dialog-modal>
