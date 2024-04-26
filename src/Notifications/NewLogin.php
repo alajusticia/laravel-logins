@@ -15,7 +15,7 @@ class NewLogin extends Notification
      * Create a new notification instance.
      */
     public function __construct(
-        private readonly RequestContext $context
+        protected readonly RequestContext $context
     ) {}
 
     /**
