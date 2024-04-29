@@ -39,7 +39,7 @@ class NewLogin extends Notification
             ->line(__('logins::notifications.new_login.review_information'));
 
         $information = __('logins::notifications.new_login.date', [
-            'value' => Carbon::make($this->context['date'])->locale(App::getLocale())->isoFormat('LLL') . '(' . Config::get('app.timezone') . ')',
+            'value' => Carbon::make($this->context['date'])->locale(App::getLocale())->isoFormat('LLL') . ' ' . Config::get('app.timezone'),
         ]);
 
         if (in_array($this->context['device_type'], ['desktop', 'mobile', 'phone', 'tablet'])) {
