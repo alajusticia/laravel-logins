@@ -5,12 +5,13 @@ namespace ALajusticia\Logins;
 use ALajusticia\Logins\Contracts\UserAgentParser;
 use ALajusticia\Logins\Factories\ParserFactory;
 use Carbon\Carbon;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
 use Stevebauman\Location\Facades\Location;
 use Stevebauman\Location\Position;
 
-class RequestContext
+class RequestContext implements Arrayable
 {
     protected Carbon $date;
     protected ?UserAgentParser $parser = null;
@@ -84,5 +85,22 @@ class RequestContext
     public function tokenName(): ?string
     {
         return $this->tokenName;
+    }
+
+    /**
+     * Transform the instance to an array.
+     */
+    public function toArray(): array
+    {
+        return [
+            'date' => $this->date()->locale(app()->getLocale())->isoFormat('LLL'),
+            'device_type' => $this->parser()->getDeviceType(),
+            'device' => $this->parser()->getDevice(),
+            'application' => $this->tokenName(),
+            'platform' => $this->parser()->getPlatform(),
+            'browser' => $this->parser()->getBrowser(),
+            'ip' => $this->ipAddress(),
+            'location' => $this->location()?->toArray(),
+        ];
     }
 }
