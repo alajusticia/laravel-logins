@@ -93,7 +93,7 @@ class RequestContext implements Arrayable
     public function toArray(): array
     {
         return [
-            'date' => $this->date()->locale(app()->getLocale())->isoFormat('LLL'),
+            'date' => $this->date()->toDateTimeString(),
             'device_type' => $this->parser()->getDeviceType(),
             'device' => $this->parser()->getDevice(),
             'application' => $this->tokenName(),

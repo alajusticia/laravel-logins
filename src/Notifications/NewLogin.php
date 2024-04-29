@@ -2,9 +2,9 @@
 
 namespace ALajusticia\Logins\Notifications;
 
-use ALajusticia\Logins\RequestContext;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\HtmlString;
@@ -12,10 +12,10 @@ use Illuminate\Support\HtmlString;
 class NewLogin extends Notification
 {
     /**
-     * Create a new notification instance.
+     * Create a new notification iŒnstance.
      */
     public function __construct(
-        protected readonly RequestContext $context
+        protected readonly array $context
     ) {}
 
     /**
@@ -39,45 +39,45 @@ class NewLogin extends Notification
             ->line(__('logins::notifications.new_login.review_information'));
 
         $information = __('logins::notifications.new_login.date', [
-            'value' => $this->context->date()->locale(App::getLocale())->isoFormat('LLL'),
+            'value' => Carbon::make($this->context['date'])->locale(App::getLocale())->isoFormat('LLL'),
         ]);
 
-        if (in_array($this->context->parser()->getDeviceType(), ['desktop', 'mobile', 'phone', 'tablet'])) {
+        if (in_array($this->context['device_type'], ['desktop', 'mobile', 'phone', 'tablet'])) {
             $information .= '<br>' . __('logins::notifications.new_login.device_type', [
-                'value' => $this->context->parser()->getDeviceType(),
+                'value' => __('logins::notifications.new_login.device_types.' . $this->context['device_type']),
             ]);
         }
 
-        if (! empty($this->context->parser()->getDevice())) {
+        if (! empty($this->context['device'])) {
             $information .= '<br>' . __('logins::notifications.new_login.device_name', [
-                'value' => $this->context->parser()->getDevice(),
+                'value' => $this->context['device'],
             ]);
-        } elseif (! empty($this->context->tokenName())) {
+        } elseif (! empty($this->context['application'])) {
             $information .= '<br>' . __('logins::notifications.new_login.application', [
-                'value' => $this->context->tokenName(),
+                'value' => $this->context['application'],
             ]);
         }
 
-        $information .= ! empty($this->context->parser()->getPlatform())
+        $information .= ! empty($this->context['platform'])
             ? '<br>' . __('logins::notifications.new_login.platform', [
-                'value' => $this->context->parser()->getPlatform(),
+                'value' => $this->context['platform'],
             ]) : '';
 
-        $information .= ! empty($this->context->parser()->getBrowser())
+        $information .= ! empty($this->context['browser'])
             ? '<br>' . __('logins::notifications.new_login.browser', [
-                'value' => $this->context->parser()->getBrowser(),
+                'value' => $this->context['browser'],
             ]) : '';
 
         $information .= '<br>' . __('logins::notifications.new_login.ip_address', [
-            'value' => $this->context->ipAddress(),
+            'value' => $this->context['ip'],
         ]);
 
-        if (! empty($this->context->location())) {
+        if (! empty($this->context['location'])) {
             // I personally rely only on the country information, as the other information (region, city) can be very
             // inaccurate, in particular with clients using mobile networks. Testing with my mobile network for example,
             // the IP address is always located in the same wrong region.
             // Feel free to use your own notification if you want to display other geolocation information.
-            $country = $this->context->location()->countryName ?? $this->context->location()->countryCode;
+            $country = $this->context['location']['countryName'] ?? $this->context['location']['countryCode'];
             if ($country) {
                 $information .= '<br>' . __('logins::notifications.new_login.country', [
                     'value' => $country,

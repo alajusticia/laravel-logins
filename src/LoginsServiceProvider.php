@@ -3,7 +3,6 @@
 namespace ALajusticia\Logins;
 
 use ALajusticia\Logins\Commands\Install;
-use ALajusticia\Logins\Commands\Jetstream;
 use ALajusticia\Logins\Events\LoggedIn;
 use ALajusticia\Logins\Listeners\SanctumEventSubscriber;
 use ALajusticia\Logins\Listeners\SessionEventSubscriber;
@@ -14,7 +13,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\ServiceProvider;
-use Livewire\Livewire;
 
 class LoginsServiceProvider extends ServiceProvider
 {
