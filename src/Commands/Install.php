@@ -14,7 +14,7 @@ class Install extends Command
      *
      * @var string
      */
-    protected $signature = 'logins:install';
+    protected $signature = 'logins:install {--Q|quiet}';
 
     /**
      * The console command description.
@@ -28,7 +28,10 @@ class Install extends Command
      */
     public function handle()
     {
-        if ($this->confirm('This will run the database migrations and create the required files for Laravel Logins. Continue?', true)) {
+        if (
+            $this->option('quiet')
+            || $this->confirm('This will run the database migrations and create the required files for Laravel Logins. Continue?', true)
+        ) {
 
             $this->line('Installing...' . "\n");
 
