@@ -14,7 +14,7 @@ class Install extends Command
      *
      * @var string
      */
-    protected $signature = 'logins:install {--Q|quiet}';
+    protected $signature = 'logins:install';
 
     /**
      * The console command description.
