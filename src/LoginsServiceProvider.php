@@ -64,7 +64,9 @@ class LoginsServiceProvider extends ServiceProvider
         }
         if ($notificationClass = Config::get('logins.new_login_notification')) {
             Event::listen(function (LoggedIn $event) use ($notificationClass) {
-                $event->authenticatable->notify(new $notificationClass($event->context->toArray()));
+                if ($event->authenticatable->notifyLogins) {
+                    $event->authenticatable->notify(new $notificationClass($event->context->toArray()));
+                }
             });
         }
 

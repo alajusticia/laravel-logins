@@ -12,6 +12,8 @@ use Laravel\Sanctum\Sanctum;
 trait HasLogins
 {
     public ?string $loginRememberToken = null;
+    public bool $notifyLogins = true;
+    public bool $trackLogins = true;
 
     /**
      * Get all the user's logins.

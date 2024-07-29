@@ -48,7 +48,8 @@ class Logins
      */
     public static function tracked(Authenticatable $model): bool
     {
-        return in_array('ALajusticia\Logins\Traits\HasLogins', class_uses_recursive($model));
+        return in_array('ALajusticia\Logins\Traits\HasLogins', class_uses_recursive($model))
+               && $model->trackLogins;
     }
 
     /**
