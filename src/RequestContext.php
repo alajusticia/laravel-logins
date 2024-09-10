@@ -100,7 +100,7 @@ class RequestContext implements Arrayable
             'platform' => $this->parser()->getPlatform(),
             'browser' => $this->parser()->getBrowser(),
             'ip' => $this->ipAddress(),
-            'location' => $this->location()?->toArray(),
+            'location' => $this->location() ? $this->location()->toArray() : null,
         ];
     }
 }
