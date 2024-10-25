@@ -3,6 +3,7 @@
 namespace ALajusticia\Logins;
 
 use ALajusticia\Logins\Models\Login;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 
@@ -15,19 +16,21 @@ class CurrentLogin
         $this->loadCurrentLogin();
     }
 
-    public function loadCurrentLogin(): void
+    public function loadCurrentLogin(?Authenticatable $user = null): void
     {
-        if (Auth::user() && Logins::tracked(Auth::user()) && ! $this->currentLogin) {
-            if (Auth::user()->isAuthenticatedBySession()) {
+        $user = $user ?? Auth::user();
 
-                $this->currentLogin = Auth::user()->logins()
+        if ($user && Logins::tracked($user) && ! $this->currentLogin) {
+            if ($user->isAuthenticatedBySession()) {
+
+                $this->currentLogin = $user->logins()
                     ->where('session_id', session()->getId())
                     ->first();
 
-            } elseif (Config::get('logins.sanctum_token_tracking') && Auth::user()->isAuthenticatedBySanctumToken()) {
+            } elseif (Config::get('logins.sanctum_token_tracking') && $user->isAuthenticatedBySanctumToken()) {
 
-                $this->currentLogin = Auth::user()->logins()
-                    ->where('personal_access_token_id', Auth::user()->currentAccessToken()->getKey())
+                $this->currentLogin = $user->logins()
+                    ->where('personal_access_token_id', $user->currentAccessToken()->getKey())
                     ->first();
 
             }

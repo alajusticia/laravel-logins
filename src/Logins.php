@@ -119,7 +119,7 @@ class Logins
                 }
             }
 
-            app(CurrentLogin::class)->loadCurrentLogin();
+            app(CurrentLogin::class)->loadCurrentLogin($user);
 
             if ($updated === 0) {
                 self::updateLastActivity();
