@@ -27,6 +27,8 @@ class SessionEventSubscriber
     {
         if (! Auth::viaRemember() && Logins::tracked($event->user)) {
             Logins::trackLoginFromSession(session()->getId(), $event->guard, $event->user, $event->remember);
+        } else {
+            Logins::checkSessionId($event->user);
         }
     }
 
