@@ -38,7 +38,7 @@ _____
 
 ## Compatibility
 
-- This package has been tested with Laravel 10 and 11
+- This package has been tested with Laravel v10 to v12
 
 - It works with all the session drivers supported by Laravel, except the cookie driver which saves the sessions only in
   the client browser and the array driver
@@ -89,7 +89,7 @@ This package relies on a user-agent parser to extract the information.
 
 It supports the two most popular parsers:
 - WhichBrowser ([https://github.com/WhichBrowser/Parser-PHP](https://github.com/WhichBrowser/Parser-PHP))
-- Agent ([https://github.com/jenssegers/agent](https://github.com/jenssegers/agent)) ⚠️ This one doesn't work with Laravel 11
+- Agent ([https://github.com/jenssegers/agent](https://github.com/jenssegers/agent)) ⚠️ This one doesn't work with Laravel > v10
 
 Before using Laravel Logins, you need to choose a supported parser, install it and indicate in the configuration file 
 which one you want to use.
