@@ -6,11 +6,12 @@ use ALajusticia\Logins\Tests\Database\Factories\UserFactory;
 use ALajusticia\Logins\Traits\HasLogins;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasLogins, HasApiTokens, HasFactory;
+    use HasLogins, HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'id', 'name', 'email', 'password',
