@@ -32,6 +32,7 @@ _____
 * [Events](#events)
   * [LoggedIn](#loggedin)
 * [Notifications](#notifications)
+  * [Temporarily disable notifications](#temporarily-disable-notifications)
 * [Translations](#translations)
 * [Purge expired logins](#purge-expired-logins)
 * [License](#license)
@@ -336,6 +337,17 @@ to the `new_login_notification` option in the `logins.php` configuration file.
 
 Laravel Logins comes with a ready-to-use notification (`ALajusticia\Logins\Notifications\NewLogin`),
 or you can use your own.
+
+### Temporarily disable notifications
+
+If you want to disable notifications for a user for the current request, you can set the `notifyLogins` public property
+(from the `HasLogins` trait) of your authenticatable model to `false` before logging in the user:
+
+```
+$user->notifyLogins = false;
+
+Auth::login($user);
+```
 
 ## Translations
 
