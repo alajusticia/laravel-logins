@@ -3,11 +3,10 @@
 namespace ALajusticia\Logins\Traits;
 
 use ALajusticia\Logins\CurrentLogin;
+use ALajusticia\Logins\Helpers;
 use ALajusticia\Logins\Models\Login;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Laravel\Sanctum\HasApiTokens;
-use Laravel\Sanctum\Sanctum;
 
 trait HasLogins
 {
@@ -93,8 +92,9 @@ trait HasLogins
      */
     public function isAuthenticatedBySanctumToken(): bool
     {
-        return in_array(HasApiTokens::class, class_uses_recursive($this))
-            && $this->currentAccessToken() instanceof Sanctum::$personalAccessTokenModel;
+        return Helpers::sanctumIsInstalled()
+            && in_array(\Laravel\Sanctum\HasApiTokens::class, class_uses_recursive($this))
+            && $this->currentAccessToken() instanceof \Laravel\Sanctum\Sanctum::$personalAccessTokenModel;
     }
 
     /**

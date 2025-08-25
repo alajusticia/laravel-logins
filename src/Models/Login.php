@@ -11,8 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
-use Laravel\Sanctum\PersonalAccessToken;
-use Laravel\Sanctum\Sanctum;
 
 class Login extends Model
 {
@@ -103,9 +101,13 @@ class Login extends Model
         );
     }
 
-    public function personalAccessToken(): BelongsTo
+    public function personalAccessToken(): BelongsTo | null
     {
-        return $this->belongsTo(Sanctum::personalAccessTokenModel(), 'personal_access_token_id');
+        if (!class_exists(\Laravel\Sanctum\Sanctum::class)) {
+            return null;
+        }
+
+        return $this->belongsTo(\Laravel\Sanctum\Sanctum::personalAccessTokenModel(), 'personal_access_token_id');
     }
 
     /**
