@@ -15,7 +15,7 @@ class LoginsUserProvider extends EloquentUserProvider
      * @param  string  $token
      * @return Model|null|void
      */
-    public function retrieveByToken($identifier, $token)
+    public function retrieveByToken($identifier, #[\SensitiveParameter] $token)
     {
         $model = $this->createModel();
 
@@ -43,11 +43,11 @@ class LoginsUserProvider extends EloquentUserProvider
     /**
      * Update the "remember me" token for the given user.
      *
-     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @param UserContract&Model $user
      * @param  string  $token
      * @return void
      */
-    public function updateRememberToken(UserContract $user, $token)
+    public function updateRememberToken(UserContract $user, #[\SensitiveParameter] $token)
     {
         $user->setRememberToken($token);
     }

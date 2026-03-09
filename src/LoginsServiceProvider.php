@@ -47,7 +47,7 @@ class LoginsServiceProvider extends ServiceProvider
         ], 'logins-config');
 
         // Load migrations
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         // Configure our authentication guard
         $this->configureGuard();
@@ -72,7 +72,9 @@ class LoginsServiceProvider extends ServiceProvider
 
         // Register Blade directives
         Blade::if('logins', function () {
-            return method_exists(Request::user(), 'logins');
+            $user = Request::user();
+
+            return is_object($user) && method_exists($user, 'logins');
         });
 
         // Load translations
@@ -89,47 +91,27 @@ class LoginsServiceProvider extends ServiceProvider
      */
     protected function configureGuard(): void
     {
-        Auth::resolved(function ($auth) {
-            $auth->extend('logins', function ($app, $name, array $config) {
-                return tap($this->createGuard($name, $config), function ($guard) {
-                    app()->refresh('request', $guard, 'setRequest');
-                });
-            });
+        Auth::extend('logins', function (Application $app, string $name, array $config) {
+            $provider = $app['auth']->createUserProvider($config['provider'] ?? null);
+
+            $guard = new LoginsSessionGuard(
+                $name,
+                $provider,
+                $app['session.store'],
+                rehashOnLogin: $app['config']->get('hashing.rehash_on_login', true),
+                timeboxDuration: $app['config']->get('auth.timebox_duration', 200000),
+                hashKey: $app['config']->get('app.key'),
+            );
+
+            $guard->setCookieJar($app['cookie']);
+            $guard->setDispatcher($app['events']);
+            $guard->setRequest($app->refresh('request', $guard, 'setRequest'));
+
+            if (isset($config['remember'])) {
+                $guard->setRememberDuration($config['remember']);
+            }
+
+            return $guard;
         });
-    }
-
-    /**
-     * Register the guard.
-     */
-    protected function createGuard(string $name, array $config): LoginsSessionGuard
-    {
-        $provider = Auth::createUserProvider($config['provider'] ?? null);
-
-        $guard = new LoginsSessionGuard(
-            $name,
-            $provider,
-            $this->app['session.store'],
-        );
-
-        // When using the remember me functionality of the authentication services we
-        // will need to be set the encryption instance of the guard, which allows
-        // secure, encrypted cookie values to get generated for those cookies.
-        if (method_exists($guard, 'setCookieJar')) {
-            $guard->setCookieJar($this->app['cookie']);
-        }
-
-        if (method_exists($guard, 'setDispatcher')) {
-            $guard->setDispatcher($this->app['events']);
-        }
-
-        if (method_exists($guard, 'setRequest')) {
-            $guard->setRequest($this->app->refresh('request', $guard, 'setRequest'));
-        }
-
-        if (isset($config['remember'])) {
-            $guard->setRememberDuration($config['remember']);
-        }
-
-        return $guard;
     }
 }
