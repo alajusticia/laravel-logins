@@ -20,29 +20,35 @@
             "homepage": "https://anthonylajusticia.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../laravel-expirable"
+        }
+    ],
     "require": {
         "php": "^8.2",
-        "alajusticia/laravel-expirable": "^2.4",
-        "illuminate/auth": "^10.0|^11.0|^12.0",
-        "illuminate/collections": "^10.0|^11.0|^12.0",
-        "illuminate/contracts": "^10.0|^11.0|^12.0",
-        "illuminate/database": "^10.0|^11.0|^12.0",
-        "illuminate/http": "^10.0|^11.0|^12.0",
-        "illuminate/queue": "^10.0|^11.0|^12.0",
-        "illuminate/session": "^10.0|^11.0|^12.0",
-        "illuminate/support": "^10.0|^11.0|^12.0",
+        "alajusticia/laravel-expirable": "dev-laravel13-compatibility",
+        "illuminate/auth": "^10.0|^11.0|^12.0|^13.0",
+        "illuminate/collections": "^10.0|^11.0|^12.0|^13.0|dev-master",
+        "illuminate/contracts": "^10.0|^11.0|^12.0|^13.0",
+        "illuminate/database": "^10.0|^11.0|^12.0|^13.0",
+        "illuminate/http": "^10.0|^11.0|^12.0|^13.0",
+        "illuminate/queue": "^10.0|^11.0|^12.0|^13.0",
+        "illuminate/session": "^10.0|^11.0|^12.0|^13.0",
+        "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
         "nesbot/carbon": "^2.67|^3.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.6",
-        "phpunit/phpunit": "^11.0",
-        "orchestra/testbench": "^10.0",
+        "phpunit/phpunit": "^11.0|^12.5.12",
+        "orchestra/testbench": "^10.0|^11.0",
         "laravel/sanctum": "^4.0",
         "whichbrowser/parser": "^2.1",
         "jenssegers/agent": "^2.6",
         "buggregator/trap": "^1.4",
         "stevebauman/location": "^7.1",
-        "livewire/livewire": "^3.4",
+        "livewire/livewire": "^3.4|^4.2",
         "laravel/fortify": "^1.21"
     },
     "autoload": {

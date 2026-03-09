@@ -47,12 +47,11 @@ class LoginsSessionGuard extends SessionGuard
      * The application must be using the AuthenticateSession middleware.
      *
      * @param  string  $password
-     * @param  string  $attribute
      * @return \Illuminate\Contracts\Auth\Authenticatable|null
      *
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    public function logoutOtherDevices($password, $attribute = 'password')
+    public function logoutOtherDevices($password)
     {
         $user = $this->user();
 
@@ -60,7 +59,7 @@ class LoginsSessionGuard extends SessionGuard
             $user->logoutOthers();
             $this->fireOtherDeviceLogoutEvent($user);
         } else {
-            return parent::logoutOtherDevices($password, $attribute);
+            return parent::logoutOtherDevices($password);
         }
     }
 }
