@@ -18,6 +18,7 @@ _____
   * [Configure the authentication guard](#configure-the-authentication-guard)
   * [Configure the user provider](#configure-the-user-provider)
   * [Laravel Sanctum](#laravel-sanctum)
+  * [Laravel Livewire Starter Kit](#laravel-livewire-starter-kit)
   * [Laravel Jetstream](#laravel-jetstream)
 * [Usage](#usage)
   * [Retrieving the logins](#retrieving-the-logins)
@@ -129,7 +130,7 @@ In your `auth.php` configuration file, use the `logins` driver in the user provi
 'providers' => [
     'users' => [
         'driver' => 'logins',
-        'model' => App\Models\User::class,
+        'model' => env('AUTH_MODEL', User::class),
     ],
     
     // ...
@@ -160,9 +161,53 @@ configuration file, and only the tokens whose name matches the defined pattern w
 'sanctum_token_name_regex' => '/^mobile_app_/',
 ```
 
+### Laravel Livewire Starter Kit
+
+If your application uses the official Laravel Livewire starter kit (Flux UI), running `php artisan logins:install`
+will also generate a reusable settings page for logins management.
+
+The installer auto-detects your starter kit variant and installs matching files:
+
+- **Single-file variant**:
+  - Copy `stubs/livewire-starter-kit/resources/views/pages/settings/⚡logins.blade.php` to `resources/views/pages/settings/⚡logins.blade.php`
+  - Add route `Route::livewire('settings/logins', 'pages::settings.logins')->name('logins.show');`
+  - Add `Logins` nav item in `resources/views/pages/settings/layout.blade.php`
+- **Class-based variant**:
+  - Copy `stubs/livewire-starter-kit-class-based/app/Livewire/Settings/Logins.php` to `app/Livewire/Settings/Logins.php`
+  - Copy `stubs/livewire-starter-kit-class-based/resources/views/livewire/settings/logins.blade.php` to `resources/views/livewire/settings/logins.blade.php`
+  - Add `use App\Livewire\Settings\Logins;` in `routes/settings.php`
+  - Add route `Route::livewire('settings/logins', Logins::class)->name('logins.show');`
+  - Add `Logins` nav item in `resources/views/components/settings/layout.blade.php`
+
+For both variants, if `config/logins.php` exists and `security_page_route` is still `null`, it is updated to `logins.show`.
+
+Use `php artisan logins:install --force` to overwrite generated UI files.
+
+If your app has heavily customized settings files and cannot be auto-updated, add these lines manually:
+
+```php
+Route::livewire('settings/logins', 'pages::settings.logins')->name('logins.show');
+```
+
+or (class-based variant):
+
+```php
+use App\Livewire\Settings\Logins;
+
+Route::livewire('settings/logins', Logins::class)->name('logins.show');
+```
+
+```blade
+<flux:navlist.item :href="route('logins.show')" wire:navigate>{{ __('Logins') }}</flux:navlist.item>
+```
+
+```php
+'security_page_route' => 'logins.show',
+```
+
 ### Laravel Jetstream
 
-If using Laravel Jetstream, you can stop using the `AuthenticateSession` middleware, as it is not necessary with Logins.
+If using the previous Livewire starter kit (Laravel Jetstream), you can stop using the `AuthenticateSession` middleware, as it is not necessary with Logins.
 
 In your `jetstream.php` configuration file, set `auth_session` to `null`:
 
