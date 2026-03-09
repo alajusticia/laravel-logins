@@ -27,4 +27,37 @@ class Helpers
     {
         return is_dir(base_path('vendor/livewire'));
     }
+
+    /**
+     * Check if Laravel Livewire Starter Kit is installed.
+     */
+    public static function livewireStarterKitIsInstalled(): bool
+    {
+        return self::livewireStarterKitSingleFileVariantIsInstalled()
+            || self::livewireStarterKitClassBasedVariantIsInstalled();
+    }
+
+    /**
+     * Check if Laravel Livewire Starter Kit (single-file component variant) is installed.
+     */
+    public static function livewireStarterKitSingleFileVariantIsInstalled(): bool
+    {
+        return self::livewireIsInstalled()
+            && is_dir(base_path('vendor/livewire/flux'))
+            && is_file(base_path('routes/settings.php'))
+            && is_file(resource_path('views/pages/settings/layout.blade.php'));
+    }
+
+    /**
+     * Check if Laravel Livewire Starter Kit (class-based variant) is installed.
+     */
+    public static function livewireStarterKitClassBasedVariantIsInstalled(): bool
+    {
+        return self::livewireIsInstalled()
+            && is_dir(base_path('vendor/livewire/flux'))
+            && is_file(base_path('routes/settings.php'))
+            && is_file(app_path('Livewire/Settings/Profile.php'))
+            && is_file(resource_path('views/livewire/settings/profile.blade.php'))
+            && is_file(resource_path('views/components/settings/layout.blade.php'));
+    }
 }
