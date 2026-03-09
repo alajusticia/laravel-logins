@@ -20,17 +20,11 @@
             "homepage": "https://anthonylajusticia.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../laravel-expirable"
-        }
-    ],
     "require": {
         "php": "^8.2",
-        "alajusticia/laravel-expirable": "dev-laravel13-compatibility",
+        "alajusticia/laravel-expirable": "^2.5",
         "illuminate/auth": "^10.0|^11.0|^12.0|^13.0",
-        "illuminate/collections": "^10.0|^11.0|^12.0|^13.0|dev-master",
+        "illuminate/collections": "^10.0|^11.0|^12.0|^13.0",
         "illuminate/contracts": "^10.0|^11.0|^12.0|^13.0",
         "illuminate/database": "^10.0|^11.0|^12.0|^13.0",
         "illuminate/http": "^10.0|^11.0|^12.0|^13.0",
