@@ -10,7 +10,7 @@ use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Title('Login settings')]
+#[Title('Active sessions')]
 class Logins extends Component
 {
     public string $password = '';
@@ -34,9 +34,9 @@ class Logins extends Component
     }
 
     /**
-     * Open the confirmation modal to disconnect all devices.
+     * Open the confirmation modal to disconnect all other devices.
      */
-    public function confirmDisconnectAllDevices(): void
+    public function confirmDisconnectAllOtherDevices(): void
     {
         $this->resetErrorBag();
         $this->password = '';
@@ -59,9 +59,9 @@ class Logins extends Component
     }
 
     /**
-     * Close the "disconnect all devices" modal.
+     * Close the "disconnect all other devices" modal.
      */
-    public function cancelDisconnectAllDevices(): void
+    public function cancelDisconnectAllOtherDevices(): void
     {
         $this->resetErrorBag();
         $this->reset('password', 'showDisconnectAllModal');
@@ -77,17 +77,17 @@ class Logins extends Component
     }
 
     /**
-     * Disconnect all tracked devices, including the current one.
+     * Disconnect all tracked devices, excepting the current one.
      */
-    public function disconnectAllDevices(): void
+    public function disconnectAllOtherDevices(): void
     {
         $this->validate([
             'password' => ['required', 'string', 'current_password'],
         ]);
 
-        Auth::user()->logoutAll();
+        Auth::user()->logoutOthers();
 
-        $this->cancelDisconnectAllDevices();
+        $this->cancelDisconnectAllOtherDevices();
         $this->showDisconnectLoginModal = false;
         $this->selectedLoginId = null;
 

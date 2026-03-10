@@ -66,4 +66,13 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
             })->middleware('auth:sanctum');
         });
     }
+
+    protected function createFile(string $path, string $content): void
+    {
+        if (! is_dir(dirname($path))) {
+            mkdir(dirname($path), 0755, true);
+        }
+
+        file_put_contents($path, $content);
+    }
 }

@@ -6,6 +6,7 @@ use ALajusticia\Logins\Helpers;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
+use function Laravel\Prompts\confirm;
 
 class Install extends Command
 {
@@ -28,10 +29,16 @@ class Install extends Command
      */
     public function handle()
     {
-        if (
-            $this->option('quiet')
-            || $this->confirm('This will run the database migrations and create the required files for Laravel Logins. Continue?', true)
-        ) {
+        $continue = true;
+
+        if (empty($this->option('quiet'))) {
+            $continue = confirm(
+                label: 'This will run the database migrations and create the required files for Laravel Logins. Continue?',
+                default: false
+            );
+        }
+
+        if ($continue) {
 
             $this->line('Installing...' . "\n");
 
@@ -69,6 +76,8 @@ class Install extends Command
                 $this->installLivewireStarterKitClassBasedVariantFiles($filesystem);
             } elseif (Helpers::livewireStarterKitSingleFileVariantIsInstalled()) {
                 $this->installLivewireStarterKitSingleFileVariantFiles($filesystem);
+            } elseif (Helpers::laravelVueStarterKitIsInstalled()) {
+                $this->installLaravelVueStarterKitFiles($filesystem);
             }
 
             $this->info('Installation was successful!');
@@ -121,11 +130,11 @@ class Install extends Command
         $this->insertLineInFile(
             resource_path('views/pages/settings/layout.blade.php'),
             "route('logins.show')",
-            "            <flux:navlist.item :href=\"route('logins.show')\" wire:navigate>{{ __('Logins') }}</flux:navlist.item>\n",
+            "            <flux:navlist.item :href=\"route('logins.show')\" wire:navigate>{{ __('Active sessions') }}</flux:navlist.item>\n",
             "            <flux:navlist.item :href=\"route('user-password.edit')\" wire:navigate>{{ __('Password') }}</flux:navlist.item>\n"
         );
 
-        $this->setLivewireStarterKitSecurityRoute();
+        $this->setSecurityPageRoute();
     }
 
     /**
@@ -167,11 +176,80 @@ class Install extends Command
         $this->insertLineInFile(
             resource_path('views/components/settings/layout.blade.php'),
             "route('logins.show')",
-            "            <flux:navlist.item :href=\"route('logins.show')\" wire:navigate>{{ __('Logins') }}</flux:navlist.item>\n",
+            "            <flux:navlist.item :href=\"route('logins.show')\" wire:navigate>{{ __('Active sessions') }}</flux:navlist.item>\n",
             "            <flux:navlist.item :href=\"route('user-password.edit')\" wire:navigate>{{ __('Password') }}</flux:navlist.item>\n"
         );
 
-        $this->setLivewireStarterKitSecurityRoute();
+        $this->setSecurityPageRoute();
+    }
+
+    /**
+     * Install Laravel Vue Starter Kit settings page files.
+     */
+    protected function installLaravelVueStarterKitFiles(Filesystem $filesystem): void
+    {
+        $this->comment('Creating files for Laravel Vue Starter Kit...' . "\n");
+
+        $overwrite = (bool) $this->option('force');
+
+        $filesystem->ensureDirectoryExists(app_path('Http/Controllers/Settings'));
+        $filesystem->ensureDirectoryExists(app_path('Http/Requests/Settings'));
+        $filesystem->ensureDirectoryExists(resource_path('js/components'));
+        $filesystem->ensureDirectoryExists(resource_path('js/pages/settings'));
+
+        $this->copyStubFile(
+            __DIR__.'/../../stubs/vue-starter-kit/app/Http/Controllers/Settings/LoginController.php',
+            app_path('Http/Controllers/Settings/LoginController.php'),
+            $overwrite
+        );
+
+        $this->copyStubFile(
+            __DIR__.'/../../stubs/vue-starter-kit/app/Http/Requests/Settings/DisconnectLoginRequest.php',
+            app_path('Http/Requests/Settings/DisconnectLoginRequest.php'),
+            $overwrite
+        );
+
+        $this->copyStubFile(
+            __DIR__.'/../../stubs/vue-starter-kit/resources/js/components/ConfirmPasswordDialog.vue',
+            resource_path('js/components/ConfirmPasswordDialog.vue'),
+            $overwrite
+        );
+
+        $this->copyStubFile(
+            __DIR__.'/../../stubs/vue-starter-kit/resources/js/pages/settings/Logins.vue',
+            resource_path('js/pages/settings/Logins.vue'),
+            $overwrite
+        );
+
+        $this->insertLineInFile(
+            base_path('routes/settings.php'),
+            'use App\\Http\\Controllers\\Settings\\LoginController;',
+            "use App\\Http\\Controllers\\Settings\\LoginController;\n",
+            "use App\\Http\\Controllers\\Settings\\PasswordController;\n"
+        );
+
+        $this->insertLineInFile(
+            base_path('routes/settings.php'),
+            "Route::get('settings/logins', [LoginController::class, 'show'])->name('logins.show');",
+            "    Route::get('settings/logins', [LoginController::class, 'show'])->name('logins.show');\n    Route::delete('settings/logins', [LoginController::class, 'destroyAll'])->name('logins.destroyAll');\n    Route::delete('settings/logins/{login}', [LoginController::class, 'destroy'])\n        ->whereNumber('login')\n        ->name('logins.destroy');\n",
+            "        ->name('user-password.update');\n"
+        );
+
+        $this->insertLineInFile(
+            resource_path('js/layouts/settings/Layout.vue'),
+            "import { show as showLogins } from '@/routes/logins';",
+            "import { show as showLogins } from '@/routes/logins';\n",
+            "import { edit as editAppearance } from '@/routes/appearance';\n"
+        );
+
+        $this->insertLineInFile(
+            resource_path('js/layouts/settings/Layout.vue'),
+            "        href: showLogins(),",
+            "    {\n        title: 'Active sessions',\n        href: showLogins(),\n    },\n",
+            "    {\n        title: 'Password',\n        href: editPassword(),\n    },\n"
+        );
+
+        $this->setSecurityPageRoute();
     }
 
     /**
@@ -213,9 +291,9 @@ class Install extends Command
     }
 
     /**
-     * Set security page route for Livewire Starter Kit if config is publishable.
+     * Set security page route if config is publishable.
      */
-    protected function setLivewireStarterKitSecurityRoute(): void
+    protected function setSecurityPageRoute(): void
     {
         $path = config_path('logins.php');
 

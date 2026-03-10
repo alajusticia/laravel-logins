@@ -18,6 +18,7 @@ _____
   * [Configure the authentication guard](#configure-the-authentication-guard)
   * [Configure the user provider](#configure-the-user-provider)
   * [Laravel Sanctum](#laravel-sanctum)
+  * [Laravel Vue Starter Kit](#laravel-vue-starter-kit)
   * [Laravel Livewire Starter Kit](#laravel-livewire-starter-kit)
   * [Laravel Jetstream](#laravel-jetstream)
 * [Usage](#usage)
@@ -161,7 +162,25 @@ configuration file, and only the tokens whose name matches the defined pattern w
 'sanctum_token_name_regex' => '/^mobile_app_/',
 ```
 
+### Laravel Vue Starter Kit
+
+If your application uses the official Laravel Vue starter kit, running `php artisan logins:install`
+will also generate a settings page for logins management.
+
+The installer auto-detects the starter kit and installs the required files:
+
+- Copy `stubs/vue-starter-kit/app/Http/Controllers/Settings/LoginController.php` to `app/Http/Controllers/Settings/LoginController.php`
+- Copy `stubs/vue-starter-kit/app/Http/Requests/Settings/DisconnectLoginRequest.php` to `app/Http/Requests/Settings/DisconnectLoginRequest.php`
+- Copy `stubs/vue-starter-kit/resources/js/components/ConfirmPasswordDialog.vue` to `resources/js/components/ConfirmPasswordDialog.vue`
+- Copy `stubs/vue-starter-kit/resources/js/pages/settings/Logins.vue` to `resources/js/pages/settings/Logins.vue`
+- Add `use App\Http\Controllers\Settings\LoginController;` and the `settings/logins` routes in `routes/settings.php`
+- Add the `Logins` nav item in `resources/js/layouts/settings/Layout.vue`
+
+If `config/logins.php` exists and `security_page_route` is still `null`, it is updated to `logins.show`.
+
 ### Laravel Livewire Starter Kit
+
+![Screenshot of the Livewire Starter Kit page](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-livewire-component.png "Logins Livewire component")
 
 If your application uses the official Laravel Livewire starter kit (Flux UI), running `php artisan logins:install`
 will also generate a reusable settings page for logins management.

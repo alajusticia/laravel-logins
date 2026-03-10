@@ -1,11 +1,11 @@
 <section class="w-full">
     @include('partials.settings-heading')
 
-    <flux:heading class="sr-only">{{ __('Login settings') }}</flux:heading>
+    <flux:heading class="sr-only">{{ __('Active sessions') }}</flux:heading>
 
     <x-settings.layout
-        :heading="__('Logins')"
-        :subheading="__('Manage devices and sessions signed in to your account')"
+        :heading="__('Active sessions')"
+        :subheading="__('Manage devices and web browsers signed in to your account')"
     >
         <div class="space-y-6">
             <flux:text variant="subtle">
@@ -72,8 +72,8 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <flux:button variant="danger" wire:click="confirmDisconnectAllDevices">
-                        {{ __('Disconnect all devices') }}
+                    <flux:button variant="danger" wire:click="confirmDisconnectAllOtherDevices">
+                        {{ __('Disconnect all other sessions') }}
                     </flux:button>
 
                     <x-action-message on="logins-updated">
@@ -114,12 +114,12 @@
     </flux:modal>
 
     <flux:modal wire:model="showDisconnectAllModal" class="max-w-lg">
-        <form method="POST" wire:submit="disconnectAllDevices" class="space-y-6">
+        <form method="POST" wire:submit="disconnectAllOtherDevices" class="space-y-6">
             <div>
-                <flux:heading size="lg">{{ __('Disconnect all devices?') }}</flux:heading>
+                <flux:heading size="lg">{{ __('Disconnect all other sessions?') }}</flux:heading>
 
                 <flux:subheading>
-                    {{ __('Enter your password to confirm. This will sign you out from every device, including this one.') }}
+                    {{ __('Enter your password to confirm. This will sign you out from every device, except the current one.') }}
                 </flux:subheading>
             </div>
 
@@ -131,12 +131,12 @@
             />
 
             <div class="flex justify-end gap-2">
-                <flux:button variant="filled" type="button" wire:click="cancelDisconnectAllDevices">
+                <flux:button variant="filled" type="button" wire:click="cancelDisconnectAllOtherDevices">
                     {{ __('Cancel') }}
                 </flux:button>
 
                 <flux:button variant="danger" type="submit">
-                    {{ __('Disconnect all devices') }}
+                    {{ __('Disconnect all other sessions') }}
                 </flux:button>
             </div>
         </form>
