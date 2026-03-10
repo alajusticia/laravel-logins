@@ -22,7 +22,7 @@ class Install extends Command
      *
      * @var string
      */
-    protected $description = 'Install command for Laravel Logins. Initial or after adding Sanctum.';
+    protected $description = 'Install command for Laravel Logins.';
 
     /**
      * Execute the console command.
