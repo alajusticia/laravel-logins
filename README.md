@@ -169,7 +169,7 @@ will also generate a reusable settings page for logins management.
 The installer auto-detects your starter kit variant and installs matching files:
 
 - **Single-file variant**:
-  - Copy `stubs/livewire-starter-kit/resources/views/pages/settings/⚡logins.blade.php` to `resources/views/pages/settings/⚡logins.blade.php`
+  - Copy `stubs/livewire-starter-kit/resources/views/pages/settings/logins.blade.php` to `resources/views/pages/settings/logins.blade.php`
   - Add route `Route::livewire('settings/logins', 'pages::settings.logins')->name('logins.show');`
   - Add `Logins` nav item in `resources/views/pages/settings/layout.blade.php`
 - **Class-based variant**:

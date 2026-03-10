@@ -106,8 +106,8 @@ class Install extends Command
         $filesystem->ensureDirectoryExists(resource_path('views/pages/settings'));
 
         $this->copyStubFile(
-            __DIR__.'/../../stubs/livewire-starter-kit/resources/views/pages/settings/⚡logins.blade.php',
-            resource_path('views/pages/settings/⚡logins.blade.php'),
+            __DIR__.'/../../stubs/livewire-starter-kit/resources/views/pages/settings/logins.blade.php',
+            resource_path('views/pages/settings/logins.blade.php'),
             (bool) $this->option('force')
         );
 
