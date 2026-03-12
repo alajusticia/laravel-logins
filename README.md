@@ -7,7 +7,7 @@
 - Log out a device, without affecting the other remembered devices (each remembered session has its own token)
 - You can also enable tracking of Sanctum personal access tokens, useful when authenticating mobile apps for example
 
-![Screenshot of the notification sent on a new login](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-notification.png "New login notification")
+![Screenshot of the email notification upon new login](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-notification-email.png "Email notification upon new login")
 
 _____
 
@@ -62,11 +62,13 @@ Publish the configuration file (`logins.php`) with:
 php artisan vendor:publish --tag="logins-config"
 ```
 
-Run the `logins:install` command (this will run the required database migrations):
+Run the `logins:install` command (this will run the required database migrations and create the files if using a starter kit):
 
 ```bash
 php artisan logins:install
 ```
+
+Use `php artisan logins:install --force` to overwrite generated UI files.
 
 ### Prepare your authenticatable models
 
@@ -164,8 +166,10 @@ configuration file, and only the tokens whose name matches the defined pattern w
 
 ### Laravel Vue Starter Kit
 
+![Screenshot of the page listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-vue-starter-kit.png "Active sessions in user settings")
+
 If your application uses the official Laravel Vue starter kit, running `php artisan logins:install`
-will also generate a settings page for logins management.
+will also generate a settings page for managing active sessions.
 
 The installer auto-detects the starter kit and installs the required files:
 
@@ -174,13 +178,13 @@ The installer auto-detects the starter kit and installs the required files:
 - Copy `stubs/vue-starter-kit/resources/js/components/ConfirmPasswordDialog.vue` to `resources/js/components/ConfirmPasswordDialog.vue`
 - Copy `stubs/vue-starter-kit/resources/js/pages/settings/Logins.vue` to `resources/js/pages/settings/Logins.vue`
 - Add `use App\Http\Controllers\Settings\LoginController;` and the `settings/logins` routes in `routes/settings.php`
-- Add the `Logins` nav item in `resources/js/layouts/settings/Layout.vue`
+- Add the `Active sessions` nav item in `resources/js/layouts/settings/Layout.vue`
 
 If `config/logins.php` exists and `security_page_route` is still `null`, it is updated to `logins.show`.
 
 ### Laravel Livewire Starter Kit
 
-![Screenshot of the Livewire Starter Kit page](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-livewire-component.png "Logins Livewire component")
+![Screenshot of the page listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-livewire-starter-kit.png "Active sessions in user settings")
 
 If your application uses the official Laravel Livewire starter kit (Flux UI), running `php artisan logins:install`
 will also generate a reusable settings page for logins management.
@@ -196,11 +200,9 @@ The installer auto-detects your starter kit variant and installs matching files:
   - Copy `stubs/livewire-starter-kit-class-based/resources/views/livewire/settings/logins.blade.php` to `resources/views/livewire/settings/logins.blade.php`
   - Add `use App\Livewire\Settings\Logins;` in `routes/settings.php`
   - Add route `Route::livewire('settings/logins', Logins::class)->name('logins.show');`
-  - Add `Logins` nav item in `resources/views/components/settings/layout.blade.php`
+  - Add `Active sessions` nav item in `resources/views/components/settings/layout.blade.php`
 
 For both variants, if `config/logins.php` exists and `security_page_route` is still `null`, it is updated to `logins.show`.
-
-Use `php artisan logins:install --force` to overwrite generated UI files.
 
 If your app has heavily customized settings files and cannot be auto-updated, add these lines manually:
 
@@ -218,10 +220,6 @@ Route::livewire('settings/logins', Logins::class)->name('logins.show');
 
 ```blade
 <flux:navlist.item :href="route('logins.show')" wire:navigate>{{ __('Logins') }}</flux:navlist.item>
-```
-
-```php
-'security_page_route' => 'logins.show',
 ```
 
 ### Laravel Jetstream
@@ -250,7 +248,7 @@ Also, if using the Jetstream with the Livewire stack, the installation command w
 project (if Jetstream has been installed after installing Logins, you will have to run the `logins:install`
 command again to update your installation):
 
-![Screenshot of the Livewire component](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-livewire-component.png "Logins Livewire component")
+![Screenshot of the Livewire component](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-jetstream-component.png "Livewire component to manage active sessions")
 
 Files will be copied in `app/Livewire/Logins.php` and `resources/views/livewire/logins.blade.php`.
 
