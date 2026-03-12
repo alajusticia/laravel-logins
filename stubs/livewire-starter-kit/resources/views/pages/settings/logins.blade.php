@@ -7,7 +7,7 @@ use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('Login settings')] class extends Component {
+new #[Title('Active sessions')] class extends Component {
     public string $password = '';
 
     public bool $showDisconnectAllModal = false;
@@ -28,9 +28,9 @@ new #[Title('Login settings')] class extends Component {
     }
 
     /**
-     * Open the confirmation modal to disconnect all devices.
+     * Open the confirmation modal to disconnect all other devices.
      */
-    public function confirmDisconnectAllDevices(): void
+    public function confirmDisconnectAllOtherDevices(): void
     {
         $this->resetErrorBag();
         $this->password = '';
@@ -53,9 +53,9 @@ new #[Title('Login settings')] class extends Component {
     }
 
     /**
-     * Close the "disconnect all devices" modal.
+     * Close the "disconnect all other devices" modal.
      */
-    public function cancelDisconnectAllDevices(): void
+    public function cancelDisconnectAllOtherDevices(): void
     {
         $this->resetErrorBag();
         $this->reset('password', 'showDisconnectAllModal');
@@ -71,17 +71,17 @@ new #[Title('Login settings')] class extends Component {
     }
 
     /**
-     * Disconnect all tracked devices, including the current one.
+     * Disconnect all tracked devices, excepting the current one.
      */
-    public function disconnectAllDevices(): void
+    public function disconnectAllOtherDevices(): void
     {
         $this->validate([
             'password' => ['required', 'string', 'current_password'],
         ]);
 
-        Auth::user()->logoutAll();
+        Auth::user()->logoutOthers();
 
-        $this->cancelDisconnectAllDevices();
+        $this->cancelDisconnectAllOtherDevices();
         $this->showDisconnectLoginModal = false;
         $this->selectedLoginId = null;
 
@@ -120,21 +120,17 @@ new #[Title('Login settings')] class extends Component {
 <section class="w-full">
     @include('partials.settings-heading')
 
-    <flux:heading class="sr-only">{{ __('Login settings') }}</flux:heading>
+    <flux:heading class="sr-only">{{ __('Active sessions') }}</flux:heading>
 
     <x-pages::settings.layout
-        :heading="__('Logins')"
-        :subheading="__('Manage devices and sessions signed in to your account')"
+        :heading="__('Active sessions')"
+        :subheading="__('Manage the devices signed in to your account')"
     >
         <div class="space-y-6">
-            <flux:text variant="subtle">
-                {{ __('Review your active devices and disconnect any sessions you no longer recognize or trust.') }}
-            </flux:text>
-
             @if ($this->logins->isEmpty())
                 <flux:callout
                     icon="information-circle"
-                    heading="{{ __('No active logins were found.') }}"
+                    heading="{{ __('No active sessions were found.') }}"
                 />
             @else
                 <div class="space-y-3">
@@ -161,7 +157,7 @@ new #[Title('Login settings')] class extends Component {
                                         </flux:text>
 
                                         @if ($login->is_current)
-                                            <flux:badge color="green">
+                                            <flux:badge color="green" size="sm">
                                                 {{ __('This device') }}
                                             </flux:badge>
                                         @endif
@@ -180,8 +176,8 @@ new #[Title('Login settings')] class extends Component {
                             </div>
 
                             <flux:button
-                                variant="danger"
-                                size="sm"
+                                variant="filled"
+                                size="xs"
                                 wire:click="confirmDisconnectLogin({{ $login->id }})"
                             >
                                 {{ __('Disconnect') }}
@@ -191,8 +187,8 @@ new #[Title('Login settings')] class extends Component {
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <flux:button variant="danger" wire:click="confirmDisconnectAllDevices">
-                        {{ __('Disconnect all devices') }}
+                    <flux:button variant="danger" wire:click="confirmDisconnectAllOtherDevices">
+                        {{ __('Disconnect all other devices') }}
                     </flux:button>
 
                     <x-action-message on="logins-updated">
@@ -209,7 +205,7 @@ new #[Title('Login settings')] class extends Component {
                 <flux:heading size="lg">{{ __('Disconnect this device?') }}</flux:heading>
 
                 <flux:subheading>
-                    {{ __('Enter your password to confirm disconnecting this device session.') }}
+                    {{ __('Enter your password to confirm disconnecting this device.') }}
                 </flux:subheading>
             </div>
 
@@ -233,12 +229,12 @@ new #[Title('Login settings')] class extends Component {
     </flux:modal>
 
     <flux:modal wire:model="showDisconnectAllModal" class="max-w-lg">
-        <form method="POST" wire:submit="disconnectAllDevices" class="space-y-6">
+        <form method="POST" wire:submit="disconnectAllOtherDevices" class="space-y-6">
             <div>
-                <flux:heading size="lg">{{ __('Disconnect all devices?') }}</flux:heading>
+                <flux:heading size="lg">{{ __('Disconnect all other devices?') }}</flux:heading>
 
                 <flux:subheading>
-                    {{ __('Enter your password to confirm. This will sign you out from every device, including this one.') }}
+                    {{ __('Enter your password to confirm you want to disconnect all other devices from your account. Your current session will remain active.') }}
                 </flux:subheading>
             </div>
 
@@ -250,12 +246,12 @@ new #[Title('Login settings')] class extends Component {
             />
 
             <div class="flex justify-end gap-2">
-                <flux:button variant="filled" type="button" wire:click="cancelDisconnectAllDevices">
+                <flux:button variant="filled" type="button" wire:click="cancelDisconnectAllOtherDevices">
                     {{ __('Cancel') }}
                 </flux:button>
 
                 <flux:button variant="danger" type="submit">
-                    {{ __('Disconnect all devices') }}
+                    {{ __('Disconnect all other devices') }}
                 </flux:button>
             </div>
         </form>

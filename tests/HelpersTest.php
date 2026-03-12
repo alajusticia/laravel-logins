@@ -46,12 +46,24 @@ class HelpersTest extends TestCase
         $this->assertFalse(Helpers::livewireStarterKitClassBasedVariantIsInstalled());
     }
 
-    protected function createFile(string $path, string $content): void
+    public function test_detect_laravel_vue_starter_kit()
     {
-        if (! is_dir(dirname($path))) {
-            mkdir(dirname($path), 0755, true);
-        }
+        $inertiaPath = base_path('vendor/inertiajs/inertia-laravel/.gitkeep');
+        $settingsRoutesPath = base_path('routes/settings.php');
+        $profileControllerPath = app_path('Http/Controllers/Settings/ProfileController.php');
+        $settingsLayoutPath = resource_path('js/layouts/settings/Layout.vue');
+        $profilePagePath = resource_path('js/pages/settings/Profile.vue');
 
-        file_put_contents($path, $content);
+        $this->createFile($inertiaPath, '');
+        $this->createFile($settingsRoutesPath, "<?php\n");
+        $this->createFile($profileControllerPath, "<?php\n");
+        $this->createFile($settingsLayoutPath, '<template></template>');
+        $this->createFile($profilePagePath, '<template></template>');
+
+        $this->assertTrue(Helpers::laravelVueStarterKitIsInstalled());
+
+        unlink($profilePagePath);
+
+        $this->assertFalse(Helpers::laravelVueStarterKitIsInstalled());
     }
 }
