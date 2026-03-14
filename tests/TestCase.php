@@ -42,7 +42,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
      */
     protected function getEnvironmentSetUp($app): void
     {
-        Logins::registerPackageRoutes($this->shouldRegisterPackageRoutes());
+        Logins::registerRoutes($this->shouldRegisterRoutes());
 
         $app['config']->set('app.key', 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
 
@@ -64,7 +64,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     /**
      * Determine if package-managed routes should be registered for the test application.
      */
-    protected function shouldRegisterPackageRoutes(): bool
+    protected function shouldRegisterRoutes(): bool
     {
         return false;
     }

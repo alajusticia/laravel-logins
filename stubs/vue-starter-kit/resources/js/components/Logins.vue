@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Laptop, Smartphone, Tablet } from 'lucide-vue-next';
 import { onMounted, reactive, ref, useId } from 'vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
@@ -16,7 +17,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Laptop, Smartphone, Tablet } from 'lucide-vue-next';
 
 type Login = {
     id: number;
@@ -47,6 +47,12 @@ const LOGINS_API_PATH = '/api/logins';
 const csrfToken = document
     .querySelector<HTMLMetaElement>('meta[name="csrf-token"]')
     ?.getAttribute('content');
+
+const getXsrfToken = (): string | undefined =>
+    document.cookie
+        .split('; ')
+        .find((cookie) => cookie.startsWith('XSRF-TOKEN='))
+        ?.slice('XSRF-TOKEN='.length);
 
 const logins = ref<Login[]>([]);
 const isLoading = ref(true);
@@ -85,6 +91,7 @@ const apiHeaders = (includeJsonBody = false): Record<string, string> => {
         Accept: 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
     };
+    const xsrfToken = getXsrfToken();
 
     if (includeJsonBody) {
         headers['Content-Type'] = 'application/json';
@@ -92,6 +99,8 @@ const apiHeaders = (includeJsonBody = false): Record<string, string> => {
 
     if (csrfToken) {
         headers['X-CSRF-TOKEN'] = csrfToken;
+    } else if (xsrfToken) {
+        headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
     }
 
     return headers;
@@ -132,7 +141,7 @@ const fetchLogins = async () => {
             credentials: 'same-origin',
         });
 
-        if (! response.ok) {
+        if (!response.ok) {
             throw new Error('Unable to load active sessions.');
         }
 
@@ -185,9 +194,10 @@ const submitPasswordAction = async (
         }
 
         form.errors = {
-            general: response.status === 401
-                ? 'Your session has expired. Refresh the page and sign in again.'
-                : 'Unable to update active sessions.',
+            general:
+                response.status === 401
+                    ? 'Your session has expired. Refresh the page and sign in again.'
+                    : 'Unable to update active sessions.',
         };
     } catch {
         form.errors = {
@@ -199,7 +209,7 @@ const submitPasswordAction = async (
 };
 
 const submitDisconnect = async () => {
-    if (! selectedLogin.value) {
+    if (!selectedLogin.value) {
         return;
     }
 
@@ -223,10 +233,14 @@ const submitDisconnect = async () => {
 };
 
 const submitDisconnectAll = async () => {
-    await submitPasswordAction(LOGINS_API_PATH, disconnectAllForm, async () => {
-        closeDisconnectAllDialog();
-        await fetchLogins();
-    });
+    await submitPasswordAction(
+        `${LOGINS_API_PATH}/others`,
+        disconnectAllForm,
+        async () => {
+            closeDisconnectAllDialog();
+            await fetchLogins();
+        },
+    );
 };
 
 onMounted(() => {
@@ -241,6 +255,96 @@ onMounted(() => {
             title="Active sessions"
             description="Manage the devices signed in to your account"
         />
+
+        <div
+            class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10"
+        >
+            <div class="space-y-1 text-red-600 dark:text-red-100">
+                <p class="font-medium">Disconnect all other devices</p>
+                <p class="text-sm">
+                    This will sign you out of your account on all other devices
+                    and browsers. Your current session will remain active.
+                </p>
+            </div>
+            <Dialog
+                :open="showDisconnectAllDialog"
+                @update:open="(open) => !open && closeDisconnectAllDialog()"
+            >
+                <DialogTrigger as-child>
+                    <Button
+                        variant="destructive"
+                        @click="showDisconnectAllDialog = true"
+                    >
+                        Disconnect all other devices
+                    </Button>
+                </DialogTrigger>
+
+                <DialogContent class="sm:max-w-sm">
+                    <form
+                        class="space-y-6"
+                        @submit.prevent="submitDisconnectAll"
+                    >
+                        <DialogHeader class="space-y-3">
+                            <DialogTitle
+                                >Disconnect all other devices?</DialogTitle
+                            >
+                            <DialogDescription>
+                                Enter your password to confirm you want to
+                                disconnect every active session from your
+                                account, except the current one.
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div class="grid gap-2">
+                            <Label
+                                :for="disconnectAllPasswordInputId"
+                                class="sr-only"
+                                >Password</Label
+                            >
+                            <Input
+                                :id="disconnectAllPasswordInputId"
+                                v-model="disconnectAllForm.password"
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                autocomplete="current-password"
+                                required
+                            />
+                            <InputError
+                                :message="disconnectAllForm.errors.password"
+                            />
+                            <InputError
+                                :message="disconnectAllForm.errors.general"
+                            />
+                        </div>
+
+                        <DialogFooter class="gap-2">
+                            <DialogClose as-child>
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    @click="
+                                        () => {
+                                            closeDisconnectAllDialog();
+                                        }
+                                    "
+                                >
+                                    Cancel
+                                </Button>
+                            </DialogClose>
+
+                            <Button
+                                type="submit"
+                                variant="destructive"
+                                :disabled="disconnectAllForm.processing"
+                            >
+                                Disconnect all other devices
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </div>
 
         <div
             v-if="isLoading"
@@ -269,7 +373,9 @@ onMounted(() => {
                 :key="login.id"
                 class="space-y-4 rounded-lg border border-border p-4"
             >
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div
+                    class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+                >
                     <div class="space-y-2">
                         <div class="flex flex-wrap items-center gap-2">
                             <component
@@ -277,7 +383,9 @@ onMounted(() => {
                                 aria-hidden="true"
                                 class="size-4 text-muted-foreground"
                             />
-                            <p class="text-sm font-medium">{{ loginLabel(login) }}</p>
+                            <p class="text-sm font-medium">
+                                {{ loginLabel(login) }}
+                            </p>
                             <Badge v-if="login.is_current" variant="secondary">
                                 Current device
                             </Badge>
@@ -285,13 +393,17 @@ onMounted(() => {
 
                         <p class="text-sm text-muted-foreground">
                             {{ login.ip_address || 'Unknown IP address' }}
-                            <span v-if="!login.is_current"> - Last active {{ login.last_active }}</span>
+                            <span v-if="!login.is_current">
+                                - Last active {{ login.last_active }}</span
+                            >
                         </p>
                     </div>
 
                     <Dialog
                         :open="selectedLogin?.id === login.id"
-                        @update:open="(open) => !open && closeDisconnectDialog()"
+                        @update:open="
+                            (open) => !open && closeDisconnectDialog()
+                        "
                     >
                         <DialogTrigger as-child>
                             <Button
@@ -303,17 +415,28 @@ onMounted(() => {
                             </Button>
                         </DialogTrigger>
 
-                        <DialogContent>
-                            <form class="space-y-6" @submit.prevent="submitDisconnect">
+                        <DialogContent class="sm:max-w-sm">
+                            <form
+                                class="space-y-6"
+                                @submit.prevent="submitDisconnect"
+                            >
                                 <DialogHeader class="space-y-3">
-                                    <DialogTitle>Disconnect this device?</DialogTitle>
+                                    <DialogTitle
+                                        >Disconnect this device?</DialogTitle
+                                    >
                                     <DialogDescription>
-                                        Enter your password to confirm you want to disconnect this device from your account.
+                                        Enter your password to confirm you want
+                                        to disconnect this device from your
+                                        account.
                                     </DialogDescription>
                                 </DialogHeader>
 
                                 <div class="grid gap-2">
-                                    <Label :for="`${disconnectPasswordInputId}-${login.id}`" class="sr-only">Password</Label>
+                                    <Label
+                                        :for="`${disconnectPasswordInputId}-${login.id}`"
+                                        class="sr-only"
+                                        >Password</Label
+                                    >
                                     <Input
                                         :id="`${disconnectPasswordInputId}-${login.id}`"
                                         v-model="disconnectForm.password"
@@ -323,8 +446,14 @@ onMounted(() => {
                                         autocomplete="current-password"
                                         required
                                     />
-                                    <InputError :message="disconnectForm.errors.password" />
-                                    <InputError :message="disconnectForm.errors.general" />
+                                    <InputError
+                                        :message="
+                                            disconnectForm.errors.password
+                                        "
+                                    />
+                                    <InputError
+                                        :message="disconnectForm.errors.general"
+                                    />
                                 </div>
 
                                 <DialogFooter class="gap-2">
@@ -356,66 +485,5 @@ onMounted(() => {
                 </div>
             </li>
         </ul>
-
-        <Dialog
-            :open="showDisconnectAllDialog"
-            @update:open="(open) => !open && closeDisconnectAllDialog()"
-        >
-            <DialogTrigger as-child>
-                <Button variant="destructive" @click="showDisconnectAllDialog = true">
-                    Disconnect all other devices
-                </Button>
-            </DialogTrigger>
-
-            <DialogContent>
-                <form class="space-y-6" @submit.prevent="submitDisconnectAll">
-                    <DialogHeader class="space-y-3">
-                        <DialogTitle>Disconnect all other devices?</DialogTitle>
-                        <DialogDescription>
-                            Enter your password to confirm you want to disconnect every active session from your account, except the current one.
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <div class="grid gap-2">
-                        <Label :for="disconnectAllPasswordInputId" class="sr-only">Password</Label>
-                        <Input
-                            :id="disconnectAllPasswordInputId"
-                            v-model="disconnectAllForm.password"
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            autocomplete="current-password"
-                            required
-                        />
-                        <InputError :message="disconnectAllForm.errors.password" />
-                        <InputError :message="disconnectAllForm.errors.general" />
-                    </div>
-
-                    <DialogFooter class="gap-2">
-                        <DialogClose as-child>
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                @click="
-                                    () => {
-                                        closeDisconnectAllDialog();
-                                    }
-                                "
-                            >
-                                Cancel
-                            </Button>
-                        </DialogClose>
-
-                        <Button
-                            type="submit"
-                            variant="destructive"
-                            :disabled="disconnectAllForm.processing"
-                        >
-                            Disconnect all other devices
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
     </div>
 </template>

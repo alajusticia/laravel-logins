@@ -26,16 +26,11 @@ class LoginsController extends Controller
     /**
      * Disconnect a specific login belonging to the current user.
      */
-    public function destroy(Request $request, int $login): Response
+    public function destroy(Request $request, int $loginId): Response
     {
         $request->validate([
             'password' => ['required', 'string', 'current_password'],
         ]);
-
-        $loginId = $request->user()
-            ->logins()
-            ->findOrFail($login)
-            ->id;
 
         $request->user()->logout($loginId);
 

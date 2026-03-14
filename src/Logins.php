@@ -17,7 +17,7 @@ class Logins
     /**
      * Determine if the package-managed routes should be registered
      */
-    protected static bool $registerPackageRoutes = false;
+    protected static bool $registerRoutes = false;
 
     /**
      * The callback that is responsible for retrieving the client's IP address, if applicable.
@@ -37,17 +37,17 @@ class Logins
     /**
      * Opt in to registering the package-managed routes.
      */
-    public static function registerPackageRoutes(bool $register = true): void
+    public static function registerRoutes(bool $register = true): void
     {
-        static::$registerPackageRoutes = $register;
+        static::$registerRoutes = $register;
     }
 
     /**
      * Determine if the package-managed routes should be registered.
      */
-    public static function shouldRegisterPackageRoutes(): bool
+    public static function shouldRegisterRoutes(): bool
     {
-        return static::$registerPackageRoutes;
+        return static::$registerRoutes;
     }
 
     /**

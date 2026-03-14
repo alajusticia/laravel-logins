@@ -192,44 +192,43 @@ In the latest version of the Laravel starter kits, there is a "Security" page in
 
 The published Livewire components include their own backend logic.
 
-For the Vue component, Laravel Logins includes API routes providing the backend logic.
+For the Vue component, Laravel Logins includes API endpoints providing the backend logic.
 
 ### Vue Starter Kit
 
-![Screenshot of the component listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-vue.png "Active sessions component")
+![Screenshot of the component listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-vue-dark.png "Active sessions component")
 
-This file is published when selecting the Vue Starter Kit:
+1. Run `php artisan logins:publish` and select `Laravel Vue Starter Kit`.
+
+The command will published this file:
 
 ```text
 resources/js/components/Logins.vue
 ```
 
-To use the built-in controller and API routes, opt in from a service provider (for example in `app/Providers/AppServiceProvider.php`):
+2. Register the built-in routes in the `boot` method of a service provider (for example in `app/Providers/AppServiceProvider.php`):
 
 ```php
 use ALajusticia\Logins\Logins;
 
 public function boot(): void
 {
-    Logins::registerPackageRoutes(true);
+    Logins::registerRoutes();
 }
 ```
 
-If you do not call `Logins::registerPackageRoutes()`, the package will not register any routes.
-
-When enabled, Laravel Logins registers these API routes:
+The following endpoints will be registered and protected behind the `auth` middleware:
 
 ```text
 GET api/logins
 DELETE api/logins/all
 DELETE api/logins/others
-DELETE api/logins/{login}
+DELETE api/logins/{loginId}
 ```
 
-The published `Logins.vue` component loads its own data from `GET /api/logins` when mounted.
-The API returns a `ALajusticia\Logins\Http\Resources\LoginResource` collection.
+These routes will be used by the published `Logins.vue` component.
 
-Import and use the `Logins.vue` component:
+3. Import and use the `Logins.vue` component:
 
 ```vue
 <script setup lang="ts">

@@ -79,7 +79,7 @@ class LoginsServiceProvider extends ServiceProvider
             return is_object($user) && method_exists($user, 'logins');
         });
 
-        $this->registerPackageRoutes();
+        $this->registerRoutes();
 
         // Load translations
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'logins');
@@ -122,10 +122,10 @@ class LoginsServiceProvider extends ServiceProvider
     /**
      * Register the package-managed routes when explicitly enabled by the host app.
      */
-    protected function registerPackageRoutes(): void
+    protected function registerRoutes(): void
     {
         $this->app->booted(function () {
-            if (! Logins::shouldRegisterPackageRoutes()) {
+            if (! Logins::shouldRegisterRoutes()) {
                 return;
             }
 

@@ -3,13 +3,12 @@
 namespace ALajusticia\Logins\Tests;
 
 use ALajusticia\Logins\Http\Controllers\LoginsController;
-use ALajusticia\Logins\Http\Resources\LoginResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 class PackageRoutesEnabledTest extends TestCase
 {
-    protected function shouldRegisterPackageRoutes(): bool
+    protected function shouldRegisterRoutes(): bool
     {
         return true;
     }
@@ -22,34 +21,32 @@ class PackageRoutesEnabledTest extends TestCase
         $this->assertTrue(Route::has('logins.destroyAll'));
     }
 
-    public function test_index_returns_login_resources_for_the_current_user(): void
+    public function test_index_route_works_with_session_authentication(): void
     {
         $user = User::factory()->create();
+        $this->withSession([]);
         $this->actingAs($user);
 
-        $session = $this->app['session.store'];
-        $session->setId(str_repeat('b', 40));
-        $session->start();
-
         $user->logins()->create([
-            'session_id' => $session->getId(),
+            'session_id' => $this->app['session.store']->getId(),
             'last_activity_at' => now(),
         ]);
 
-        $request = Request::create('/api/logins', 'GET');
-        $request->setLaravelSession($session);
-        $request->setUserResolver(fn () => $user);
+        $this->getJson('/api/logins')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertCookie('XSRF-TOKEN')
+            ->assertJsonMissingPath('data.0.disconnect_url')
+            ->assertJsonMissingPath('data.0.disconnectAllUrl');
+    }
 
-        $this->app->instance('request', $request);
+    public function test_package_routes_use_web_authentication_middleware(): void
+    {
+        $middleware = Route::getRoutes()->getByName('logins.index')->gatherMiddleware();
 
-        $resource = $this->app->make(LoginsController::class)->index($request);
-        $payload = $resource->response($request)->getData(true);
-
-        $this->assertInstanceOf(LoginResource::class, $resource->collection->first());
-        $this->assertArrayHasKey('data', $payload);
-        $this->assertCount(1, $payload['data']);
-        $this->assertArrayNotHasKey('disconnect_url', $payload['data'][0]);
-        $this->assertArrayNotHasKey('disconnectAllUrl', $payload['data'][0]);
+        $this->assertContains('web', $middleware);
+        $this->assertContains('auth', $middleware);
+        $this->assertNotContains('api', $middleware);
     }
 
     public function test_destroy_route_revokes_the_selected_login(): void
@@ -68,17 +65,9 @@ class PackageRoutesEnabledTest extends TestCase
             'last_activity_at' => now()->subMinute(),
         ]);
 
-        $request = Request::create("/api/logins/{$otherLogin->getKey()}", 'DELETE', [
+        $this->deleteJson("/api/logins/{$otherLogin->getKey()}", [
             'password' => 'password',
-        ]);
-        $request->setLaravelSession($this->app['session.store']);
-        $request->setUserResolver(fn () => $user);
-
-        $this->app->instance('request', $request);
-
-        $response = $this->app->make(LoginsController::class)->destroy($request, $otherLogin->getKey());
-
-        $this->assertSame(204, $response->getStatusCode());
+        ])->assertNoContent();
 
         $this->assertDatabaseHas('logins', [
             'id' => $currentLogin->getKey(),
@@ -109,7 +98,7 @@ class PackageRoutesEnabledTest extends TestCase
             'last_activity_at' => now()->subMinute(),
         ]);
 
-        $request = Request::create('/api/logins', 'DELETE', [
+        $request = Request::create('/api/logins/others', 'DELETE', [
             'password' => 'password',
         ]);
         $request->setLaravelSession($session);
