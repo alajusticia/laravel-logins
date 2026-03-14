@@ -182,20 +182,21 @@ Options:
 - Use `--starter-kit=vue`, `--starter-kit=livewire-single-file`, `--starter-kit=livewire-class-based`, or `--starter-kit=jetstream-livewire` to skip the prompt.
 - Use `--force` to overwrite an existing published component.
 
-The `logins:publish` command asks which starter kit you want to target and publishes the reusable `Active Sessions` files for that stack.
+The `logins:publish` command asks which starter kit you want to target and publishes the reusable `Active Sessions` component for that stack.
 
 This keeps the package out of your application structure and lets you place the component wherever you want.
 
 In the latest version of the Laravel starter kits, there is a "Security" page in the user settings area: this is the perfect place to put the `Active Sessions` component.
 
 The published Livewire components include their own session-disconnect behavior.
-For the Vue component, Laravel Logins publishes a controller alongside the component.
+
+For the Vue component, Laravel Logins publishes a controller alongside the component. You
 
 ### Vue Starter Kit
 
 ![Screenshot of the component listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-vue-starter-kit.png "Active sessions component")
 
-Publishing the Vue variant copies:
+These files are published when selecting the Vue Starter Kit:
 
 ```text
 app/Http/Controllers/LoginsController.php
@@ -205,10 +206,10 @@ resources/js/components/Logins.vue
 The component expects:
 
 - a `logins` prop containing the tracked logins to display
-- a `disconnectAllUrl` prop for the "disconnect all other devices" action
+- a `disconnectAllUrl` prop for the "Disconnect all other devices" action
 - each login item to expose its own `disconnect_url`
 
-Use the published controller for the logout actions:
+In your routes, use the published controller for the logout actions:
 
 ```php
 use App\Http\Controllers\LoginsController;
@@ -262,9 +263,9 @@ defineProps<{
 
 ### Livewire Starter Kit
 
-![Screenshot of the component listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-livewire-starter-kit.png "Active sessions component")
+![Screenshot of the component listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-livewire.png "Active sessions component")
 
-Publishing the Livewire variant copies the reusable component files. The command asks whether you want the single-file or class-based variant:
+Publishing the UI component for Livewire copies the reusable component files in your project. The command asks whether you want the single-file or class-based variant:
 
 - **Single-file variant**:
   - `resources/views/livewire/logins.blade.php`
@@ -274,11 +275,52 @@ Publishing the Livewire variant copies the reusable component files. The command
 
 Render the published component wherever it makes sense in your application.
 
-You can, for example, add this at the bottom of the security settings page:
+You can, for example, add it at the bottom of the security settings page:
 
 ```blade
 <livewire:logins class="mt-12" />
 ```
+
+### Laravel Jetstream with Livewire
+
+If you're using the previous Livewire starter kit (Laravel Jetstream), you can stop using the `AuthenticateSession` middleware, as it is not necessary with Logins.
+
+In your `jetstream.php` configuration file, set `auth_session` to `null`:
+
+```php
+'auth_session' => null,
+```
+
+In your routes, remove the middleware:
+
+```diff
+Route::middleware([
+    'auth:sanctum',
+-    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    // ...
+});
+```
+
+Run the `logins:publish` command and select `Laravel Jetstream with Livewire`.
+This will publish this component:
+
+![Screenshot of the Livewire component for Jetstream](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-jetstream-livewire.png "Livewire component to manage active sessions in your Jetstream project")
+
+Files will be copied in `app/Livewire/Logins.php` and `resources/views/livewire/logins.blade.php`.
+
+To use the component, replace the `LogoutOtherBrowserSessionsForm` component of Jetstream, in the profile page
+(`resources/views/profile/show.blade.php`) view, by the `Logins` component:
+
+```diff
+<div class="mt-10 sm:mt-0">
+-    @livewire('profile.logout-other-browser-sessions-form')
++    @livewire('logins')
+</div>
+```
+
+Feel free to modify the component to suit your needs.
 
 ## Usage
 

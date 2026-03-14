@@ -9,7 +9,7 @@
 
     <x-slot name="content">
         <div class="max-w-xl text-sm text-gray-600 dark:text-gray-400">
-            {{ __('If necessary, you may log out of all of your other browser sessions across all of your devices. Some of your recent sessions are listed below; however, this list may not be exhaustive. If you feel your account has been compromised, you should also update your password.') }}
+            {{ __('If necessary, you may log out of your account on other devices. Some of your recent sessions are listed below; however, this list may not be exhaustive. If you feel your account has been compromised, you should immediately change your password.') }}
         </div>
 
         @if (count($this->logins) > 0)
@@ -54,13 +54,13 @@
                                     @csrf
                                     <button @click.prevent="$root.submit();"
                                             class="underline text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 rounded-md">
-                                        {{ __('Log Out') }}
+                                        {{ __('Log out') }}
                                     </button>
                                 </form>
                             @else
                                 <button wire:click="confirmLogoutSingle({{ $login->id }})" wire:loading.attr="disabled"
                                         class="underline text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 rounded-md">
-                                    {{ __('Log Out') }}
+                                    {{ __('Log out') }}
                                 </button>
                             @endif
                         </div>
@@ -71,7 +71,7 @@
 
         <div class="flex items-center mt-5">
             <x-button wire:click="confirmLogout" wire:loading.attr="disabled">
-                {{ __('Log Out Other Devices') }}
+                {{ __('Disconnect all other devices') }}
             </x-button>
 
             <x-action-message class="ms-3" on="loggedOut">
@@ -82,19 +82,23 @@
         <!-- Log Out Other Devices Confirmation Modal -->
         <x-dialog-modal wire:model.live="confirmingLogout">
             <x-slot name="title">
-                {{ __('Log Out All Other Devices') }}
+                {{ __('Disconnect all other devices') }}
             </x-slot>
 
             <x-slot name="content">
-                {{ __('Please enter your password to confirm you would like to log out of your other sessions across all of your devices.') }}
+                {{ __('Please enter your password to confirm you would like to log out of your account across all of your other devices.') }}
 
                 <div class="mt-4" x-data="{}" x-on:confirming-logout-other-browser-sessions.window="setTimeout(() => $refs.password.focus(), 250)">
-                    <x-input type="password" class="mt-1 block w-3/4"
-                                autocomplete="current-password"
-                                placeholder="{{ __('Password') }}"
-                                x-ref="password"
-                                wire:model="password"
-                                wire:keydown.enter="logoutOtherDevices" />
+                    <x-input
+                        type="password"
+                        name="password"
+                        autocomplete="current-password"
+                        placeholder="{{ __('Password') }}"
+                        x-ref="password"
+                        wire:model="password"
+                        wire:keydown.enter="logoutOtherDevices"
+                        class="mt-1 block w-full"
+                    />
 
                     <x-input-error for="password" class="mt-2" />
                 </div>
@@ -108,7 +112,7 @@
                 <x-button class="ms-3"
                             wire:click="logoutOtherDevices"
                             wire:loading.attr="disabled">
-                    {{ __('Log Out Other Browser Sessions') }}
+                    {{ __('Disconnect all other devices') }}
                 </x-button>
             </x-slot>
         </x-dialog-modal>
@@ -116,19 +120,23 @@
         <!-- Log Out Single Device Confirmation Modal -->
         <x-dialog-modal wire:model.live="confirmingLogoutSingle">
             <x-slot name="title">
-                {{ __('Log Out A Device') }}
+                {{ __('Log out a device') }}
             </x-slot>
 
             <x-slot name="content">
                 {{ __('Please enter your password to confirm you would like to log out of your session on the selected device.') }}
 
                 <div class="mt-4" x-data="{}" x-on:confirming-logout-single-session.window="setTimeout(() => $refs.password.focus(), 250)">
-                    <x-input type="password" class="mt-1 block w-3/4"
-                             autocomplete="current-password"
-                             placeholder="{{ __('Password') }}"
-                             x-ref="password"
-                             wire:model="password"
-                             wire:keydown.enter="logoutSingleSession" />
+                    <x-input
+                        type="password"
+                        name="password"
+                        autocomplete="current-password"
+                        placeholder="{{ __('Password') }}"
+                        x-ref="password"
+                        wire:model="password"
+                        wire:keydown.enter="logoutSingleSession"
+                        class="mt-1 block w-full"
+                    />
 
                     <x-input-error for="password" class="mt-2" />
                 </div>
@@ -142,7 +150,7 @@
                 <x-button class="ms-3"
                           wire:click="logoutSingleSession"
                           wire:loading.attr="disabled">
-                    {{ __('Log Out') }}
+                    {{ __('Log out') }}
                 </x-button>
             </x-slot>
         </x-dialog-modal>
