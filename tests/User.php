@@ -4,6 +4,7 @@ namespace ALajusticia\Logins\Tests;
 
 use ALajusticia\Logins\Tests\Database\Factories\UserFactory;
 use ALajusticia\Logins\Traits\HasLogins;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -27,10 +28,8 @@ class User extends Authenticatable
 
     /**
      * Create a new factory instance for the model.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-    protected static function newFactory()
+    protected static function newFactory(): Factory
     {
         return UserFactory::new();
     }

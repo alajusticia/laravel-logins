@@ -1,30 +1,28 @@
 <?php
 
-namespace App\Http\Controllers\Settings;
+namespace App\Http\Controllers;
 
 use ALajusticia\Logins\Models\Login;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Settings\DisconnectLoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Inertia\Response;
 
-class LoginController extends Controller
+class LoginsController extends Controller
 {
     /**
-     * Show the user's active logins.
+     * Get the props expected by the published Vue component.
+     *
+     * @return array{logins: array<int, array<string, mixed>>, disconnectAllUrl: string}
      */
-    public function show(Request $request): Response
+    public function props(Request $request): array
     {
-        return Inertia::render('settings/Logins', [
+        return [
             'logins' => $request->user()
                 ->logins()
                 ->latest('last_activity_at')
                 ->get()
                 ->map(fn (Login $login): array => [
                     'id' => $login->id,
-                    'label' => $login->label ?: 'Unknown device',
+                    'label' => filled($login->label) ? $login->label : null,
                     'device_type' => $login->device_type,
                     'device' => $login->device,
                     'platform' => $login->platform,
@@ -34,16 +32,23 @@ class LoginController extends Controller
                     'last_activity_at' => $login->last_activity_at?->toIso8601String(),
                     'created_at' => $login->created_at?->toIso8601String(),
                     'is_current' => $login->is_current,
+                    'disconnect_url' => route('logins.destroy', $login->getKey()),
                 ])
-                ->values(),
-        ]);
+                ->values()
+                ->all(),
+            'disconnectAllUrl' => route('logins.destroyOthers'),
+        ];
     }
 
     /**
-     * Disconnect one device/session.
+     * Disconnect a specific login belonging to the current user.
      */
-    public function destroy(DisconnectLoginRequest $request, int $login): RedirectResponse
+    public function destroy(Request $request, int $login): RedirectResponse
     {
+        $request->validate([
+            'password' => ['required', 'string', 'current_password'],
+        ]);
+
         $loginId = $request->user()
             ->logins()
             ->findOrFail($login)
@@ -55,10 +60,14 @@ class LoginController extends Controller
     }
 
     /**
-     * Disconnect all active devices/sessions.
+     * Disconnect every login except the current session/token.
      */
-    public function destroyAll(DisconnectLoginRequest $request): RedirectResponse
+    public function destroyOthers(Request $request): RedirectResponse
     {
+        $request->validate([
+            'password' => ['required', 'string', 'current_password'],
+        ]);
+
         $request->user()->logoutOthers();
 
         return back();

@@ -1,16 +1,13 @@
 <?php
 
-namespace App\Livewire\Settings;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Title('Active sessions')]
 class Logins extends Component
 {
     public string $password = '';

@@ -4,13 +4,13 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('Active sessions')] class extends Component {
+new class extends Component {
     public string $password = '';
 
     public bool $showDisconnectAllModal = false;
+
     public bool $showDisconnectLoginModal = false;
 
     #[Locked]
@@ -117,87 +117,81 @@ new #[Title('Active sessions')] class extends Component {
     }
 }; ?>
 
-<section class="w-full">
-    @include('partials.settings-heading')
+<section {{ $attributes->merge(['class' => 'w-full space-y-6']) }}>
+    <div class="space-y-1">
+        <flux:heading>{{ __('Active sessions') }}</flux:heading>
+        <flux:subheading>{{ __('Manage the devices signed in to your account') }}</flux:subheading>
+    </div>
 
-    <flux:heading class="sr-only">{{ __('Active sessions') }}</flux:heading>
+    @if ($this->logins->isEmpty())
+        <flux:callout
+            icon="information-circle"
+            heading="{{ __('No active sessions were found.') }}"
+        />
+    @else
+        <div class="space-y-3">
+            @foreach ($this->logins as $login)
+                <div
+                    wire:key="login-{{ $login->id }}"
+                    class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-4 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between"
+                >
+                    <div class="flex items-start gap-3">
+                        <div class="mt-0.5 text-zinc-500 dark:text-zinc-400">
+                            @if ($login->device_type === 'desktop')
+                                <flux:icon.computer-desktop variant="outline" class="size-5" />
+                            @elseif ($login->device_type === 'tablet')
+                                <flux:icon.device-tablet variant="outline" class="size-5" />
+                            @else
+                                <flux:icon.device-phone-mobile variant="outline" class="size-5" />
+                            @endif
+                        </div>
 
-    <x-pages::settings.layout
-        :heading="__('Active sessions')"
-        :subheading="__('Manage the devices signed in to your account')"
-    >
-        <div class="space-y-6">
-            @if ($this->logins->isEmpty())
-                <flux:callout
-                    icon="information-circle"
-                    heading="{{ __('No active sessions were found.') }}"
-                />
-            @else
-                <div class="space-y-3">
-                    @foreach ($this->logins as $login)
-                        <div
-                            wire:key="login-{{ $login->id }}"
-                            class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-4 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between"
-                        >
-                            <div class="flex items-start gap-3">
-                                <div class="mt-0.5 text-zinc-500 dark:text-zinc-400">
-                                    @if ($login->device_type === 'desktop')
-                                        <flux:icon.computer-desktop variant="outline" class="size-5" />
-                                    @elseif ($login->device_type === 'tablet')
-                                        <flux:icon.device-tablet variant="outline" class="size-5" />
-                                    @else
-                                        <flux:icon.device-phone-mobile variant="outline" class="size-5" />
-                                    @endif
-                                </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <flux:text class="font-medium text-zinc-900 dark:text-zinc-100">
+                                    {{ filled($login->label) ? $login->label : __('Unknown device') }}
+                                </flux:text>
 
-                                <div class="space-y-1">
-                                    <div class="flex items-center gap-2">
-                                        <flux:text class="font-medium text-zinc-900 dark:text-zinc-100">
-                                            {{ filled($login->label) ? $login->label : __('Unknown device') }}
-                                        </flux:text>
-
-                                        @if ($login->is_current)
-                                            <flux:badge color="green" size="sm">
-                                                {{ __('This device') }}
-                                            </flux:badge>
-                                        @endif
-                                    </div>
-
-                                    <flux:text size="sm" variant="subtle">
-                                        {{ $login->ip_address ?: __('Unknown IP address') }}
-                                    </flux:text>
-
-                                    @if (! $login->is_current)
-                                        <flux:text size="sm" variant="subtle">
-                                            {{ __('Last active :time', ['time' => $login->last_active]) }}
-                                        </flux:text>
-                                    @endif
-                                </div>
+                                @if ($login->is_current)
+                                    <flux:badge color="green" size="sm">
+                                        {{ __('This device') }}
+                                    </flux:badge>
+                                @endif
                             </div>
 
-                            <flux:button
-                                variant="filled"
-                                size="xs"
-                                wire:click="confirmDisconnectLogin({{ $login->id }})"
-                            >
-                                {{ __('Disconnect') }}
-                            </flux:button>
+                            <flux:text size="sm" variant="subtle">
+                                {{ $login->ip_address ?: __('Unknown IP address') }}
+                            </flux:text>
+
+                            @if (! $login->is_current)
+                                <flux:text size="sm" variant="subtle">
+                                    {{ __('Last active :time', ['time' => $login->last_active]) }}
+                                </flux:text>
+                            @endif
                         </div>
-                    @endforeach
-                </div>
+                    </div>
 
-                <div class="flex items-center gap-3">
-                    <flux:button variant="danger" wire:click="confirmDisconnectAllOtherDevices">
-                        {{ __('Disconnect all other devices') }}
+                    <flux:button
+                        variant="filled"
+                        size="xs"
+                        wire:click="confirmDisconnectLogin({{ $login->id }})"
+                    >
+                        {{ __('Disconnect') }}
                     </flux:button>
-
-                    <x-action-message on="logins-updated">
-                        {{ __('Updated.') }}
-                    </x-action-message>
                 </div>
-            @endif
+            @endforeach
         </div>
-    </x-pages::settings.layout>
+
+        <div class="flex items-center gap-3">
+            <flux:button variant="danger" wire:click="confirmDisconnectAllOtherDevices">
+                {{ __('Disconnect all other devices') }}
+            </flux:button>
+
+            <x-action-message on="logins-updated">
+                {{ __('Updated.') }}
+            </x-action-message>
+        </div>
+    @endif
 
     <flux:modal wire:model="showDisconnectLoginModal" class="max-w-lg">
         <form method="POST" wire:submit="disconnectSelectedDevice" class="space-y-6">

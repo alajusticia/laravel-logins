@@ -3,6 +3,7 @@
 namespace ALajusticia\Logins;
 
 use ALajusticia\Logins\Commands\Install;
+use ALajusticia\Logins\Commands\Publish;
 use ALajusticia\Logins\Events\LoggedIn;
 use ALajusticia\Logins\Listeners\SanctumEventSubscriber;
 use ALajusticia\Logins\Listeners\SessionEventSubscriber;
@@ -29,6 +30,7 @@ class LoginsServiceProvider extends ServiceProvider
         // Register commands
         $this->commands([
             Install::class,
+            Publish::class,
         ]);
 
         $this->app->singleton(CurrentLogin::class, function (Application $app) {
