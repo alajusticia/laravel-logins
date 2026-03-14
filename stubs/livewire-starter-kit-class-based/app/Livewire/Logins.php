@@ -88,7 +88,7 @@ class Logins extends Component
         $this->showDisconnectLoginModal = false;
         $this->selectedLoginId = null;
 
-        $this->redirect(route('login', absolute: false), navigate: true);
+        $this->dispatch('logins-updated');
     }
 
     /**
@@ -121,6 +121,6 @@ class Logins extends Component
 
     public function render(): View
     {
-        return view('livewire.settings.logins');
+        return view('livewire.logins');
     }
 }

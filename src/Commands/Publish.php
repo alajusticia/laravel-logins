@@ -168,15 +168,7 @@ class Publish extends Command
     {
         $this->comment('Publishing the UI component for the Laravel Vue Starter Kit...' . "\n");
 
-        $filesystem->ensureDirectoryExists(app_path('Http/Controllers'));
         $filesystem->ensureDirectoryExists(resource_path('js/components'));
-
-        $this->copyStubFile(
-            $filesystem,
-            __DIR__.'/../../stubs/vue-starter-kit/app/Http/Controllers/LoginsController.php',
-            app_path('Http/Controllers/LoginsController.php'),
-            $overwrite
-        );
 
         $this->copyStubFile(
             $filesystem,

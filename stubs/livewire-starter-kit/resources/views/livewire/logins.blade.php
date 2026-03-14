@@ -85,7 +85,7 @@ new class extends Component {
         $this->showDisconnectLoginModal = false;
         $this->selectedLoginId = null;
 
-        $this->redirect(route('login', absolute: false), navigate: true);
+        $this->dispatch('logins-updated');
     }
 
     /**

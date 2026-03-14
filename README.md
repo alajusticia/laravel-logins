@@ -18,9 +18,10 @@ _____
   * [Configure the authentication guard](#configure-the-authentication-guard)
   * [Configure the user provider](#configure-the-user-provider)
   * [Laravel Sanctum](#laravel-sanctum)
-  * [Publish Starter Kit Components](#publish-starter-kit-components)
-  * [Laravel Vue Starter Kit](#laravel-vue-starter-kit)
-  * [Laravel Livewire Starter Kit](#laravel-livewire-starter-kit)
+* [UI components](#ui-components)
+  * [Vue Starter Kit](#vue-starter-kit)
+  * [Livewire Starter Kit](#livewire-starter-kit)
+  * [Jetstream with Livewire](#jetstream-with-livewire)
 * [Usage](#usage)
   * [Retrieving the logins](#retrieving-the-logins)
     * [Get all the logins](#get-all-the-logins)
@@ -164,7 +165,10 @@ configuration file, and only the tokens whose name matches the defined pattern w
 
 ## UI components
 
-Logins also comes with ready-to-use UI components.
+Logins also includes ready-to-use UI components.
+
+These optional add-ons are designed for projects using the official Laravel starter kits.
+They provide a working setup out of the box, without requiring you to build your own components.
 
 The following Laravel starter kits are supported (more coming):
 
@@ -184,80 +188,56 @@ Options:
 
 The `logins:publish` command asks which starter kit you want to target and publishes the reusable `Active Sessions` component for that stack.
 
-This keeps the package out of your application structure and lets you place the component wherever you want.
-
 In the latest version of the Laravel starter kits, there is a "Security" page in the user settings area: this is the perfect place to put the `Active Sessions` component.
 
-The published Livewire components include their own session-disconnect behavior.
+The published Livewire components include their own backend logic.
 
-For the Vue component, Laravel Logins publishes a controller alongside the component. You
+For the Vue component, Laravel Logins includes API routes providing the backend logic.
 
 ### Vue Starter Kit
 
-![Screenshot of the component listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-vue-starter-kit.png "Active sessions component")
+![Screenshot of the component listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-vue.png "Active sessions component")
 
-These files are published when selecting the Vue Starter Kit:
+This file is published when selecting the Vue Starter Kit:
 
 ```text
-app/Http/Controllers/LoginsController.php
 resources/js/components/Logins.vue
 ```
 
-The component expects:
-
-- a `logins` prop containing the tracked logins to display
-- a `disconnectAllUrl` prop for the "Disconnect all other devices" action
-- each login item to expose its own `disconnect_url`
-
-In your routes, use the published controller for the logout actions:
+To use the built-in controller and API routes, opt in from a service provider (for example in `app/Providers/AppServiceProvider.php`):
 
 ```php
-use App\Http\Controllers\LoginsController;
-use Illuminate\Support\Facades\Route;
+use ALajusticia\Logins\Logins;
 
-Route::delete('settings/logins', [LoginsController::class, 'destroyOthers'])->name('logins.destroyOthers');
-Route::delete('settings/logins/{login}', [LoginsController::class, 'destroy'])->name('logins.destroy');
+public function boot(): void
+{
+    Logins::registerPackageRoutes(true);
+}
 ```
 
-You can also use the published controller to prepare the props expected by the component:
+If you do not call `Logins::registerPackageRoutes()`, the package will not register any routes.
 
-```php
-use App\Http\Controllers\LoginsController;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
+When enabled, Laravel Logins registers these API routes:
 
-return Inertia::render('settings/Security', [
-    ...app(LoginsController::class)->props($request),
-]);
+```text
+GET api/logins
+DELETE api/logins/all
+DELETE api/logins/others
+DELETE api/logins/{login}
 ```
 
-Then render the component wherever you want in your Vue page:
+The published `Logins.vue` component loads its own data from `GET /api/logins` when mounted.
+The API returns a `ALajusticia\Logins\Http\Resources\LoginResource` collection.
 
-Example:
+Import and use the `Logins.vue` component:
 
 ```vue
 <script setup lang="ts">
 import Logins from '@/components/Logins.vue';
-
-defineProps<{
-    logins: Array<{
-        id: number;
-        label: string | null;
-        device_type: string | null;
-        ip_address: string | null;
-        last_active: string;
-        is_current: boolean;
-        disconnect_url: string;
-    }>;
-    disconnectAllUrl: string;
-}>();
 </script>
 
 <template>
-    <Logins
-        :logins="logins"
-        :disconnect-all-url="disconnectAllUrl"
-    />
+    <Logins />
 </template>
 ```
 
@@ -281,7 +261,7 @@ You can, for example, add it at the bottom of the security settings page:
 <livewire:logins class="mt-12" />
 ```
 
-### Laravel Jetstream with Livewire
+### Jetstream with Livewire
 
 If you're using the previous Livewire starter kit (Laravel Jetstream), you can stop using the `AuthenticateSession` middleware, as it is not necessary with Logins.
 

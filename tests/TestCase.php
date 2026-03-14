@@ -3,6 +3,7 @@
 namespace ALajusticia\Logins\Tests;
 
 use ALajusticia\Expirable\ExpirableServiceProvider;
+use ALajusticia\Logins\Logins;
 use ALajusticia\Logins\LoginsServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -41,6 +42,10 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
      */
     protected function getEnvironmentSetUp($app): void
     {
+        Logins::registerPackageRoutes($this->shouldRegisterPackageRoutes());
+
+        $app['config']->set('app.key', 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
+
         $app['config']->set('auth.guards', [
             'web' => [
                 'driver' => 'logins',
@@ -54,6 +59,14 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
                 'model' => User::class,
             ],
         ]);
+    }
+
+    /**
+     * Determine if package-managed routes should be registered for the test application.
+     */
+    protected function shouldRegisterPackageRoutes(): bool
+    {
+        return false;
     }
 
     /**
