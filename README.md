@@ -1,11 +1,11 @@
 # Laravel Logins 🔑
 
-- Track each login, attaching information about the device (device type, device name, OS, browser, IP address) and the context (date, location)
-- Save this information in your database, allowing you to display it in the user's account
-- Notify users of a new login, along with the information collected
-- Offer your users the ability to log out a specific device, all the devices except the current one, or all at once
-- Log out a device, without affecting the other remembered devices (each remembered session has its own token)
-- You can also enable tracking of Sanctum personal access tokens, useful when authenticating mobile apps for example
+- For each login, record information about the device (device type, device name, OS, browser, IP address) and the context (date and location)
+- Display active sessions in the user's account so they can review connected devices
+- Notify users by email whenever a new login occurs, including the collected information
+- Allow users to sign out a specific device, all devices except the current one, or all devices at once
+- Sign out a device without affecting other remembered devices (each remembered session has its own token)
+- Optionally track Sanctum tokens, which is useful when authenticating mobile apps, for example
 
 ![Screenshot of the email notification upon new login](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-notification-email.png "Email notification upon new login")
 
@@ -38,6 +38,7 @@ _____
   * [Temporarily disable notifications](#temporarily-disable-notifications)
 * [Translations](#translations)
 * [Purge expired logins](#purge-expired-logins)
+* [GDPR and Privacy Considerations](#gdpr-and-privacy-considerations)
 * [License](#license)
 
 ## Compatibility
@@ -477,6 +478,63 @@ To purge expired logins, you can add the `ALajusticia\Logins\Models\Login` class
         \ALajusticia\Logins\Models\Login::class,
     ],
 ```
+
+## GDPR and Privacy Considerations
+
+Laravel Logins helps applications track and manage authentication sessions so users can review and terminate access from other devices. Because this functionality involves storing session metadata, it is important to consider both **security** and **privacy** aspects when using this package.
+
+### Stored Information
+
+Depending on your configuration and implementation, the package may store authentication metadata such as:
+
+- User identifier
+- IP address
+- Browser / device information (user agent)
+- Login timestamp
+- Last activity timestamp
+
+This information is used solely to allow users to **review their active sessions and revoke access from other devices**.
+
+Some of these elements (such as IP addresses or device information) may be considered **personal data** under privacy regulations such as the **General Data Protection Regulation (GDPR)**.
+
+### Responsibility
+
+This package provides only the technical functionality required to manage login sessions.  
+The **application integrating this package is responsible for ensuring compliance** with applicable privacy laws and regulations.
+
+Laravel Logins **does not collect or transmit data externally**. All data is stored locally within your application's database.
+
+### Privacy Best Practices
+
+If you use this package in a production environment, especially within jurisdictions governed by privacy regulations (such as the EU), consider applying the following best practices:
+
+- **Inform users** in your Privacy Policy that login session information may be recorded for security purposes.
+- **Limit retention** of old session records and periodically remove outdated entries.
+- **Delete related session records** when a user account is deleted.
+- **Restrict database access** to authorized services only.
+
+Tracking login sessions can typically be justified under the **legitimate interest of protecting user accounts and preventing unauthorized access**.
+
+### Security Benefits
+
+The features provided by Laravel Logins contribute to account security by allowing users to:
+
+- View recent login activity
+- Identify unknown devices or sessions
+- Revoke access from other devices
+
+These capabilities help users detect suspicious activity and protect their accounts.
+
+### Disclosure of Security Issues
+
+If you discover a security vulnerability within this package, please report it responsibly by opening a private security advisory on GitHub or contacting the maintainer.
+
+Please **do not disclose security vulnerabilities publicly until they have been addressed**.
+
+### Legal Disclaimer
+
+This package provides technical tools only and does not constitute legal advice.  
+Developers integrating this package should consult appropriate legal guidance to ensure their applications comply with applicable privacy regulations.
 
 ## License
 
