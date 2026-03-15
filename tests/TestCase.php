@@ -3,6 +3,7 @@
 namespace ALajusticia\Logins\Tests;
 
 use ALajusticia\Expirable\ExpirableServiceProvider;
+use ALajusticia\Logins\Logins;
 use ALajusticia\Logins\LoginsServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -11,9 +12,7 @@ use Laravel\Sanctum\SanctumServiceProvider;
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
     /**
-     * Setup the test environment.
-     *
-     * @return void
+     * Set up the test environment.
      */
     protected function setUp(): void
     {
@@ -28,12 +27,8 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
 
     /**
      * Get package providers.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     *
-     * @return array
      */
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
             ExpirableServiceProvider::class,
@@ -44,12 +39,20 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
 
     /**
      * Define environment setup.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     * @return void
      */
-    protected function getEnvironmentSetUp($app)
+    protected function getEnvironmentSetUp($app): void
     {
+        Logins::registerRoutes($this->shouldRegisterRoutes());
+
+        $app['config']->set('app.key', 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
+
+        $app['config']->set('auth.guards', [
+            'web' => [
+                'driver' => 'logins',
+                'provider' => 'users',
+            ],
+        ]);
+
         $app['config']->set('auth.providers', [
             'users' => [
                 'driver' => 'logins',
@@ -58,21 +61,23 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         ]);
     }
 
-    protected function setRoutes()
+    /**
+     * Determine if package-managed routes should be registered for the test application.
+     */
+    protected function shouldRegisterRoutes(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Set up routes
+     */
+    protected function setRoutes(): void
     {
         Route::prefix('api')->middleware(['api'])->group(function () {
             Route::get('/user', function (Request $request) {
                 return $request->user();
             })->middleware('auth:sanctum');
         });
-    }
-
-    protected function createFile(string $path, string $content): void
-    {
-        if (! is_dir(dirname($path))) {
-            mkdir(dirname($path), 0755, true);
-        }
-
-        file_put_contents($path, $content);
     }
 }

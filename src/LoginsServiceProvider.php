@@ -3,6 +3,7 @@
 namespace ALajusticia\Logins;
 
 use ALajusticia\Logins\Commands\Install;
+use ALajusticia\Logins\Commands\Publish;
 use ALajusticia\Logins\Events\LoggedIn;
 use ALajusticia\Logins\Listeners\SanctumEventSubscriber;
 use ALajusticia\Logins\Listeners\SessionEventSubscriber;
@@ -29,6 +30,7 @@ class LoginsServiceProvider extends ServiceProvider
         // Register commands
         $this->commands([
             Install::class,
+            Publish::class,
         ]);
 
         $this->app->singleton(CurrentLogin::class, function (Application $app) {
@@ -77,6 +79,8 @@ class LoginsServiceProvider extends ServiceProvider
             return is_object($user) && method_exists($user, 'logins');
         });
 
+        $this->registerRoutes();
+
         // Load translations
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'logins');
 
@@ -112,6 +116,20 @@ class LoginsServiceProvider extends ServiceProvider
             }
 
             return $guard;
+        });
+    }
+
+    /**
+     * Register the package-managed routes when explicitly enabled by the host app.
+     */
+    protected function registerRoutes(): void
+    {
+        $this->app->booted(function () {
+            if (! Logins::shouldRegisterRoutes()) {
+                return;
+            }
+
+            $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
         });
     }
 }

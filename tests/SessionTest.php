@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 class SessionTest extends TestCase
 {
-    public function test_auth_with_session()
+    public function test_auth_with_session(): void
     {
         // Create user
         $user = User::factory()->create();

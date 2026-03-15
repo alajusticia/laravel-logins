@@ -18,9 +18,10 @@ _____
   * [Configure the authentication guard](#configure-the-authentication-guard)
   * [Configure the user provider](#configure-the-user-provider)
   * [Laravel Sanctum](#laravel-sanctum)
-  * [Laravel Vue Starter Kit](#laravel-vue-starter-kit)
-  * [Laravel Livewire Starter Kit](#laravel-livewire-starter-kit)
-  * [Laravel Jetstream](#laravel-jetstream)
+* [UI components](#ui-components)
+  * [Vue Starter Kit](#vue-starter-kit)
+  * [Livewire Starter Kit](#livewire-starter-kit)
+  * [Jetstream with Livewire](#jetstream-with-livewire)
 * [Usage](#usage)
   * [Retrieving the logins](#retrieving-the-logins)
     * [Get all the logins](#get-all-the-logins)
@@ -41,10 +42,10 @@ _____
 
 ## Compatibility
 
-- This package has been tested with Laravel v10 to v12
+- This package has been tested with Laravel v10 to v13
 
-- It works with all the session drivers supported by Laravel, except the cookie driver which saves the sessions only in
-  the client browser and the array driver
+- It works with all the session drivers supported by Laravel, except the cookie driver (which saves the sessions only in
+  the client browser) and the array driver
 
 - It also supports personal access tokens provided by **Laravel Sanctum (v3)**
 
@@ -62,13 +63,11 @@ Publish the configuration file (`logins.php`) with:
 php artisan vendor:publish --tag="logins-config"
 ```
 
-Run the `logins:install` command (this will run the required database migrations and create the files if using a starter kit):
+Run the `logins:install` command to run the required database migrations:
 
 ```bash
 php artisan logins:install
 ```
-
-Use `php artisan logins:install --force` to overwrite generated UI files.
 
 ### Prepare your authenticatable models
 
@@ -164,67 +163,110 @@ configuration file, and only the tokens whose name matches the defined pattern w
 'sanctum_token_name_regex' => '/^mobile_app_/',
 ```
 
-### Laravel Vue Starter Kit
+## UI components
 
-![Screenshot of the page listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-vue-starter-kit.png "Active sessions in user settings")
+Logins also includes ready-to-use UI components.
 
-If your application uses the official Laravel Vue starter kit, running `php artisan logins:install`
-will also generate a settings page for managing active sessions.
+These optional add-ons are designed for projects using the official Laravel starter kits.
+They provide a working setup out of the box, without requiring you to build your own components.
 
-The installer auto-detects the starter kit and installs the required files:
+The following Laravel starter kits are supported (more coming):
 
-- Copy `stubs/vue-starter-kit/app/Http/Controllers/Settings/LoginController.php` to `app/Http/Controllers/Settings/LoginController.php`
-- Copy `stubs/vue-starter-kit/app/Http/Requests/Settings/DisconnectLoginRequest.php` to `app/Http/Requests/Settings/DisconnectLoginRequest.php`
-- Copy `stubs/vue-starter-kit/resources/js/components/ConfirmPasswordDialog.vue` to `resources/js/components/ConfirmPasswordDialog.vue`
-- Copy `stubs/vue-starter-kit/resources/js/pages/settings/Logins.vue` to `resources/js/pages/settings/Logins.vue`
-- Add `use App\Http\Controllers\Settings\LoginController;` and the `settings/logins` routes in `routes/settings.php`
-- Add the `Active sessions` nav item in `resources/js/layouts/settings/Layout.vue`
+- [Laravel Vue Starter Kit](https://laravel.com/docs/12.x/starter-kits#vue)
+- [Laravel Livewire Starter Kit](https://laravel.com/docs/12.x/starter-kits#livewire)
+- [Laravel Jetstream with Livewire](https://jetstream.laravel.com/introduction.html#livewire-blade)
 
-If `config/logins.php` exists and `security_page_route` is still `null`, it is updated to `logins.show`.
+If you want to use the UI component, you can publish it running this command:
 
-### Laravel Livewire Starter Kit
+```bash
+php artisan logins:publish
+```
 
-![Screenshot of the page listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-livewire-starter-kit.png "Active sessions in user settings")
+Options:
+- Use `--starter-kit=vue`, `--starter-kit=livewire-single-file`, `--starter-kit=livewire-class-based`, or `--starter-kit=jetstream-livewire` to skip the prompt.
+- Use `--force` to overwrite an existing published component.
 
-If your application uses the official Laravel Livewire starter kit (Flux UI), running `php artisan logins:install`
-will also generate a reusable settings page for logins management.
+The `logins:publish` command asks which starter kit you want to target and publishes the reusable `Active Sessions` component for that stack.
 
-The installer auto-detects your starter kit variant and installs matching files:
+In the latest version of the Laravel starter kits, there is a "Security" page in the user settings area: this is the perfect place to put the `Active Sessions` component.
+
+The published Livewire components include their own backend logic.
+
+For the Vue component, Laravel Logins includes API endpoints providing the backend logic.
+
+### Vue Starter Kit
+
+| Light                                                                                                   | Dark                                                                                                        |
+|---------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| ![Screenshot of the component listing the active sessions in light mode](images/laravel-logins-vue.png) | ![Screenshot of the component listing the active sessions in dark mode](images/laravel-logins-vue-dark.png) |
+
+1. Run `php artisan logins:publish` and select `Laravel Vue Starter Kit`.
+
+The command will published this file:
+
+```text
+resources/js/components/Logins.vue
+```
+
+2. Register the built-in routes in the `boot` method of a service provider (for example in `app/Providers/AppServiceProvider.php`):
+
+```php
+use ALajusticia\Logins\Logins;
+
+public function boot(): void
+{
+    Logins::registerRoutes();
+}
+```
+
+The following endpoints will be registered and protected behind the `auth` middleware:
+
+```text
+GET api/logins
+DELETE api/logins/all
+DELETE api/logins/others
+DELETE api/logins/{loginId}
+```
+
+These routes will be used by the published `Logins.vue` component.
+
+3. Import and use the `Logins.vue` component:
+
+```vue
+<script setup lang="ts">
+import Logins from '@/components/Logins.vue';
+</script>
+
+<template>
+    <Logins />
+</template>
+```
+
+### Livewire Starter Kit
+
+| Light                                                                                                        | Dark                                                                                                |
+|--------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| ![Screenshot of the component listing the active sessions in light mode](images/laravel-logins-livewire.png) | ![Screenshot of the component listing the active sessions in dark mode](images/laravel-logins-livewire-dark.png) |
+
+Publishing the UI component for Livewire copies the reusable component files in your project. The command asks whether you want the single-file or class-based variant:
 
 - **Single-file variant**:
-  - Copy `stubs/livewire-starter-kit/resources/views/pages/settings/logins.blade.php` to `resources/views/pages/settings/logins.blade.php`
-  - Add route `Route::livewire('settings/logins', 'pages::settings.logins')->name('logins.show');`
-  - Add `Logins` nav item in `resources/views/pages/settings/layout.blade.php`
+  - `resources/views/livewire/logins.blade.php`
 - **Class-based variant**:
-  - Copy `stubs/livewire-starter-kit-class-based/app/Livewire/Settings/Logins.php` to `app/Livewire/Settings/Logins.php`
-  - Copy `stubs/livewire-starter-kit-class-based/resources/views/livewire/settings/logins.blade.php` to `resources/views/livewire/settings/logins.blade.php`
-  - Add `use App\Livewire\Settings\Logins;` in `routes/settings.php`
-  - Add route `Route::livewire('settings/logins', Logins::class)->name('logins.show');`
-  - Add `Active sessions` nav item in `resources/views/components/settings/layout.blade.php`
+  - `app/Livewire/Logins.php`
+  - `resources/views/livewire/logins.blade.php`
 
-For both variants, if `config/logins.php` exists and `security_page_route` is still `null`, it is updated to `logins.show`.
+Render the published component wherever it makes sense in your application.
 
-If your app has heavily customized settings files and cannot be auto-updated, add these lines manually:
-
-```php
-Route::livewire('settings/logins', 'pages::settings.logins')->name('logins.show');
-```
-
-or (class-based variant):
-
-```php
-use App\Livewire\Settings\Logins;
-
-Route::livewire('settings/logins', Logins::class)->name('logins.show');
-```
+You can, for example, add it at the bottom of the security settings page:
 
 ```blade
-<flux:navlist.item :href="route('logins.show')" wire:navigate>{{ __('Logins') }}</flux:navlist.item>
+<livewire:logins class="mt-12" />
 ```
 
-### Laravel Jetstream
+### Jetstream with Livewire
 
-If using the previous Livewire starter kit (Laravel Jetstream), you can stop using the `AuthenticateSession` middleware, as it is not necessary with Logins.
+If you're using the previous Livewire starter kit (Laravel Jetstream), you can stop using the `AuthenticateSession` middleware, as it is not necessary with Logins.
 
 In your `jetstream.php` configuration file, set `auth_session` to `null`:
 
@@ -244,11 +286,12 @@ Route::middleware([
 });
 ```
 
-Also, if using the Jetstream with the Livewire stack, the installation command will copy a Livewire component in your
-project (if Jetstream has been installed after installing Logins, you will have to run the `logins:install`
-command again to update your installation):
+Run the `logins:publish` command and select `Laravel Jetstream with Livewire`.
+This will publish this component:
 
-![Screenshot of the Livewire component](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-jetstream-component.png "Livewire component to manage active sessions")
+| Light                                                                                                                  | Dark                                                                                                          |
+|------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| ![Screenshot of the component listing the active sessions in light mode](images/laravel-logins-jetstream-livewire.png) | ![Screenshot of the component listing the active sessions in dark mode](images/laravel-logins-jetstream-livewire-dark.png) |
 
 Files will be copied in `app/Livewire/Logins.php` and `resources/views/livewire/logins.blade.php`.
 

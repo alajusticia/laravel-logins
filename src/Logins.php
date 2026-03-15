@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Request;
 class Logins
 {
     /**
+     * Determine if the package-managed routes should be registered
+     */
+    protected static bool $registerRoutes = false;
+
+    /**
      * The callback that is responsible for retrieving the client's IP address, if applicable.
      *
      * @var callable|null
@@ -27,6 +32,22 @@ class Logins
     public static function getIpAddressUsing(callable $callback): void
     {
         static::$getIpAddressUsingCallback = $callback;
+    }
+
+    /**
+     * Opt in to registering the package-managed routes.
+     */
+    public static function registerRoutes(bool $register = true): void
+    {
+        static::$registerRoutes = $register;
+    }
+
+    /**
+     * Determine if the package-managed routes should be registered.
+     */
+    public static function shouldRegisterRoutes(): bool
+    {
+        return static::$registerRoutes;
     }
 
     /**
