@@ -196,7 +196,9 @@ For the Vue component, Laravel Logins includes API endpoints providing the backe
 
 ### Vue Starter Kit
 
-![Screenshot of the component listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-vue-dark.png "Active sessions component")
+| Light                                                                                                   | Dark                                                                                                        |
+|---------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| ![Screenshot of the component listing the active sessions in light mode](images/laravel-logins-vue.png) | ![Screenshot of the component listing the active sessions in dark mode](images/laravel-logins-vue-dark.png) |
 
 1. Run `php artisan logins:publish` and select `Laravel Vue Starter Kit`.
 
@@ -242,7 +244,9 @@ import Logins from '@/components/Logins.vue';
 
 ### Livewire Starter Kit
 
-![Screenshot of the component listing the active sessions](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-livewire.png "Active sessions component")
+| Light                                                                                                        | Dark                                                                                                |
+|--------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| ![Screenshot of the component listing the active sessions in light mode](images/laravel-logins-livewire.png) | ![Screenshot of the component listing the active sessions in dark mode](images/laravel-logins-livewire-dark.png) |
 
 Publishing the UI component for Livewire copies the reusable component files in your project. The command asks whether you want the single-file or class-based variant:
 
@@ -285,7 +289,9 @@ Route::middleware([
 Run the `logins:publish` command and select `Laravel Jetstream with Livewire`.
 This will publish this component:
 
-![Screenshot of the Livewire component for Jetstream](https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/laravel-logins-jetstream-livewire.png "Livewire component to manage active sessions in your Jetstream project")
+| Light                                                                                                                  | Dark                                                                                                          |
+|------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| ![Screenshot of the component listing the active sessions in light mode](images/laravel-logins-jetstream-livewire.png) | ![Screenshot of the component listing the active sessions in dark mode](images/laravel-logins-jetstream-livewire-dark.png) |
 
 Files will be copied in `app/Livewire/Logins.php` and `resources/views/livewire/logins.blade.php`.
 
