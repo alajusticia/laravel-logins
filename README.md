@@ -38,6 +38,7 @@ _____
   * [Temporarily disable notifications](#temporarily-disable-notifications)
 * [Translations](#translations)
 * [Purge expired logins](#purge-expired-logins)
+* [Stored User-Agent length](#stored-user-agent-length)
 * [GDPR and Privacy Considerations](#gdpr-and-privacy-considerations)
 * [License](#license)
 
@@ -69,6 +70,9 @@ Run the `logins:install` command to run the required database migrations:
 ```bash
 php artisan logins:install
 ```
+
+When upgrading an existing application, run your migrations so package schema changes are applied.
+For example, recent versions widen the `logins.user_agent` column to `TEXT`.
 
 ### Prepare your authenticatable models
 
@@ -313,11 +317,14 @@ Feel free to modify the component to suit your needs.
 The `ALajusticia\Logins\Traits\HasLogins` trait provides your authenticatable models with methods to retrieve and manage
 the user's logins.
 
-Everytime a new successful login occurs or a Sanctum token is created, information about the request will automatically
+Every time a new successful login occurs or a Sanctum token is created, information about the request will automatically
 be saved in the database in the `logins` table.
 
-Also, if a notification class is defined in the `logins.php` configuration file, a notification will be sent to your
-user with the information.
+Tracking writes are best-effort: if the login record cannot be saved, the authentication request or token creation will
+still complete.
+
+When a login is tracked successfully, and if a notification class is defined in the `logins.php` configuration file, a
+notification will be sent to your user with the information.
 
 ### Retrieving the logins
 
@@ -478,6 +485,19 @@ To purge expired logins, you can add the `ALajusticia\Logins\Models\Login` class
         \ALajusticia\Logins\Models\Login::class,
     ],
 ```
+
+## Stored User-Agent length
+
+Laravel Logins stores the raw User-Agent header in the `logins.user_agent` column.
+The column is `TEXT`, but the stored value is capped to `1024` bytes by default to keep audit data bounded.
+
+You can customize the max length in the `logins.php` configuration file:
+
+```php
+'user_agent_max_length' => 1024,
+```
+
+Set this option to `null` if you want to store the full User-Agent header.
 
 ## GDPR and Privacy Considerations
 

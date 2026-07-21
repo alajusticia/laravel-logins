@@ -55,7 +55,7 @@ class LoginFactory
     protected static function getNewLoginWithContext(RequestContext $context): Login
     {
         return new Login([
-            'user_agent' => $context->userAgent(),
+            'user_agent' => self::truncateUserAgent($context->userAgent()),
             'ip_address' => $context->ipAddress(),
             'device_type' => $context->parser()->getDeviceType(),
             'device' => $context->parser()->getDevice(),
@@ -63,5 +63,21 @@ class LoginFactory
             'browser' => $context->parser()->getBrowser(),
             'location' => $context->location() ?? null,
         ]);
+    }
+
+    protected static function truncateUserAgent(?string $userAgent): ?string
+    {
+        if ($userAgent === null) {
+            return null;
+        }
+
+        $maxLength = Config::get('logins.user_agent_max_length', 1024);
+
+        if ($maxLength === null) {
+            return $userAgent;
+        }
+
+        // Limit by bytes, but avoid splitting UTF-8 characters because databases can reject invalid byte sequences.
+        return mb_strcut($userAgent, 0, max(0, (int) $maxLength), 'UTF-8');
     }
 }

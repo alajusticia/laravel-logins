@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('logins', function (Blueprint $table) {
             $table->id();
             $table->morphs('authenticatable');
-            $table->string('user_agent')->nullable();
+            $table->text('user_agent')->nullable();
             $table->string('ip_address')->nullable();
             $table->string('device_type')->nullable();
             $table->string('device')->nullable();

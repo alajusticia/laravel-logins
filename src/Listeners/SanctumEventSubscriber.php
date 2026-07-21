@@ -61,7 +61,9 @@ class SanctumEventSubscriber
             $login->expiresAt($personalAccessToken->expires_at);
 
             // Attach the login to the model and save it
-            $model->logins()->save($login);
+            if (! Logins::storeLogin($model, $login)) {
+                return;
+            }
 
             // Dispatch event
             event(new LoggedIn($model, $context));

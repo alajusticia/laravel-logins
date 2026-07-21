@@ -5,6 +5,8 @@ namespace ALajusticia\Logins\Tests;
 use ALajusticia\Expirable\ExpirableServiceProvider;
 use ALajusticia\Logins\Logins;
 use ALajusticia\Logins\LoginsServiceProvider;
+use ALajusticia\Logins\Tests\Fakes\ExceptionHandlerFake;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\SanctumServiceProvider;
@@ -19,6 +21,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         parent::setUp();
 
         $this->loadLaravelMigrations();
+        $this->loadMigrationsFrom(__DIR__.'/../vendor/laravel/sanctum/database/migrations');
 
         $this->artisan('migrate')->run();
 
@@ -67,6 +70,15 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     protected function shouldRegisterRoutes(): bool
     {
         return false;
+    }
+
+    protected function fakeExceptionHandler(): ExceptionHandlerFake
+    {
+        $handler = new ExceptionHandlerFake();
+
+        $this->app->instance(ExceptionHandler::class, $handler);
+
+        return $handler;
     }
 
     /**

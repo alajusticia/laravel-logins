@@ -65,6 +65,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | User-Agent max length
+    |--------------------------------------------------------------------------
+    |
+    | Limit the byte length of the raw User-Agent value stored for each login.
+    | Set to null to store the full header value.
+    |
+    */
+
+    'user_agent_max_length' => 1024,
+
+    /*
+    |--------------------------------------------------------------------------
     | IP address geolocation
     |--------------------------------------------------------------------------
     |

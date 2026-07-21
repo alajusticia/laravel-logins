@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 class Logins
 {
@@ -99,12 +100,25 @@ class Logins
         );
 
         // Attach the login to the user and save it
-        $user->logins()->save($login);
+        if (! self::storeLogin($user, $login)) {
+            return;
+        }
 
         session(['login_id' => $login->id]);
 
         // Dispatch event
         event(new LoggedIn($user, $context));
+    }
+
+    public static function storeLogin(Authenticatable $user, Login $login): bool
+    {
+        try {
+            $user->logins()->save($login);
+        } catch (Throwable) {
+            return false;
+        }
+
+        return true;
     }
 
     public static function checkSessionId($user)
