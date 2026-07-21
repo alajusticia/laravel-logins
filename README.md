@@ -18,6 +18,7 @@ _____
   * [Configure the authentication guard](#configure-the-authentication-guard)
   * [Configure the user provider](#configure-the-user-provider)
   * [Laravel Sanctum](#laravel-sanctum)
+* [Throttling activity updates](#throttling-activity-updates)
 * [UI components](#ui-components)
   * [Vue Starter Kit](#vue-starter-kit)
   * [Livewire Starter Kit](#livewire-starter-kit)
@@ -167,6 +168,33 @@ configuration file, and only the tokens whose name matches the defined pattern w
 ```php
 'sanctum_token_name_regex' => '/^mobile_app_/',
 ```
+
+## Throttling activity updates
+
+Whenever a login is tracked (session or Sanctum token), the `last_activity_at` column of the `logins` table is
+refreshed on every authenticated request. On high-traffic apps this causes many database writes just to update
+the last-activity timestamp.
+
+You can throttle these updates to reduce database writes significantly. It is optional and enabled in the
+configuration file:
+
+```php
+// config/logins.php
+'activity_update' => [
+    'interval' => 300,
+    'cache_store' => null,
+],
+```
+
+- `interval`: the minimum number of seconds between two updates for the same login. `0` (the default) keeps the
+  original behavior and updates on every request. A value like `300` updates `last_activity_at` at most once
+  every 300 seconds per login.
+- `cache_store`: the cache store used for throttling. `null` uses your default store. Point it at a shared store
+  (Redis, Memcached, database) so the throttle holds across all your workers and servers; a per-process store
+  like `array` or `file` will not throttle reliably.
+
+With throttling enabled, `last_activity_at` stays accurate to within `interval` seconds, which is usually enough
+for most use cases.
 
 ## UI components
 
