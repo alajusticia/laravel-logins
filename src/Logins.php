@@ -156,8 +156,8 @@ class Logins
 
             app(CurrentLogin::class)->loadCurrentLogin($user);
 
-            if ($updated === 0) {
-                self::updateLastActivity();
+            if ($updated === 0 && $currentLogin = app(CurrentLogin::class)->currentLogin) {
+                ThrottleUpdateService::update('login:' . $currentLogin->getKey(), fn () => self::updateLastActivity());
             }
         }
     }
