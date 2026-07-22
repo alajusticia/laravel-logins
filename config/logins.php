@@ -137,4 +137,18 @@ return [
     */
 
     'security_page_route' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activity update interval
+    |--------------------------------------------------------------------------
+    | How often to refresh last_activity_at for a tracked login.
+    | 0 = update on every authenticated request (original behavior).
+    | N = update at most once per N seconds (fewer DB writes).
+    |     Requires a shared cache store (Redis, memcached, database).
+    */
+    'activity_update' => [
+        'interval'    => 0,     // seconds; 0 = every request (original behavior)
+        'cache_store' => null,  // null = default store; set a shared store (e.g. 'redis') so the throttle holds across workers
+    ],
 ];
