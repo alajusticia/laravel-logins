@@ -7,8 +7,6 @@ use ALajusticia\Logins\Events\LoggedIn;
 use ALajusticia\Logins\Factories\LoginFactory;
 use ALajusticia\Logins\Logins;
 use ALajusticia\Logins\RequestContext;
-use ALajusticia\Logins\ThrottleUpdateService;
-use Exception;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
@@ -21,22 +19,21 @@ class SanctumEventSubscriber
     /**
      * Handle personal access token creation event.
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function handlePersonalAccessTokenAuthentication(TokenAuthenticated $event): void
     {
         if (Logins::tracked($event->token->tokenable)) {
-            ThrottleUpdateService::update('token:' . $event->token->getKey(), function () use ($event) {
-                app(CurrentLogin::class)->loadCurrentLogin($event->token->tokenable);
-                Logins::updateLastActivity();
-            });
+            app(CurrentLogin::class)->loadCurrentLogin($event->token->tokenable);
+
+            Logins::updateLastActivity();
         }
     }
 
     /**
      * Handle personal access token creation event.
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function handlePersonalAccessTokenCreation(PersonalAccessToken $personalAccessToken): void
     {

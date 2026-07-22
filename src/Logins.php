@@ -156,8 +156,8 @@ class Logins
 
             app(CurrentLogin::class)->loadCurrentLogin($user);
 
-            if ($updated === 0 && $currentLogin = app(CurrentLogin::class)->currentLogin) {
-                ThrottleUpdateService::update('login:' . $currentLogin->getKey(), fn () => self::updateLastActivity());
+            if ($updated === 0) {
+                self::updateLastActivity();
             }
         }
     }
@@ -165,10 +165,12 @@ class Logins
     public static function updateLastActivity()
     {
         if ($currentLogin = app(CurrentLogin::class)->currentLogin) {
-            $currentLogin->update([
-                'ip_address' => self::ipAddress(),
-                'last_activity_at' => now(),
-            ]);
+            ThrottleUpdateService::update($currentLogin->getKey(), function () use ($currentLogin) {
+                $currentLogin->update([
+                    'ip_address' => self::ipAddress(),
+                    'last_activity_at' => now(),
+                ]);
+            });
         }
     }
 }

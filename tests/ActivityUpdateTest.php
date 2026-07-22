@@ -8,17 +8,6 @@ use Laravel\Sanctum\Events\TokenAuthenticated;
 
 class ActivityUpdateTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // The package TestCase migrates its own tables but not Sanctum's.
-        $this->artisan('migrate', [
-            '--path' => 'vendor/laravel/sanctum/database/migrations',
-            '--realpath' => true,
-        ])->run();
-    }
-
     protected function getEnvironmentSetUp($app): void
     {
         parent::getEnvironmentSetUp($app);
@@ -129,7 +118,7 @@ class ActivityUpdateTest extends TestCase
         return $counts;
     }
 
-    public function test_token_path_skips_both_queries_when_throttled(): void
+    public function test_token_path_skips_only_the_write_when_throttled(): void
     {
         config(['logins.activity_update.interval' => 300]);
         $user = User::factory()->create();
@@ -144,7 +133,7 @@ class ActivityUpdateTest extends TestCase
         $this->travel(60)->seconds(); // still inside the 300s window
 
         $closed = $this->countLoginsQueries(fn () => $this->authenticate($user, $pat));
-        $this->assertSame(0, $closed['select'], 'throttled: no SELECT');
+        $this->assertSame(1, $closed['select'], 'current login is always loaded, even when throttled');
         $this->assertSame(0, $closed['write'], 'throttled: no UPDATE');
     }
 
