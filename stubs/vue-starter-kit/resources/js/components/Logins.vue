@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Laptop, Smartphone, Tablet } from 'lucide-vue-next';
+import { Laptop, Smartphone, Tablet } from '@lucide/vue';
 import { onMounted, reactive, ref, useId } from 'vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
