@@ -37,6 +37,7 @@ _____
   * [LoggedIn](#loggedin)
 * [Notifications](#notifications)
   * [Temporarily disable notifications](#temporarily-disable-notifications)
+  * [Disable notifications globally](#disable-notifications-globally)
 * [Translations](#translations)
 * [Purge expired logins](#purge-expired-logins)
 * [Stored User-Agent length](#stored-user-agent-length)
@@ -473,11 +474,11 @@ Event::listen(function (LoggedIn $event) {
 
 ## Notifications
 
-If you want to send a notification to your users when new access to their account occurs, pass a notification class
-to the `new_login_notification` option in the `logins.php` configuration file.
+The notification sent to your users when new access to their account occurs is defined by the
+`new_login_notification` option in the `logins.php` configuration file.
 
-Laravel Logins comes with a ready-to-use notification (`ALajusticia\Logins\Notifications\NewLogin`),
-or you can use your own.
+Laravel Logins comes with a ready-to-use notification (`ALajusticia\Logins\Notifications\NewLogin`), enabled by default,
+or you can pass your own notification class.
 
 ### Temporarily disable notifications
 
@@ -489,6 +490,20 @@ $user->notifyLogins = false;
 
 Auth::login($user);
 ```
+
+### Disable notifications globally
+
+To prevent this package from sending any new login notification, set the `new_login_notification` option to `false`:
+
+```php
+'new_login_notification' => false,
+```
+
+No listener is registered at all in this case, so no notification will be sent for any user.
+
+Do this as well if you prefer to handle the notification yourself: listen to the [LoggedIn](#loggedin) event and apply
+your own logic (for instance, to notify users only on unknown devices, or to respect a per-user preference stored in
+your database).
 
 ## Translations
 
