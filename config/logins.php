@@ -16,6 +16,7 @@ return [
     | application.
     |
     */
+
     'database_connection' => env('SESSION_CONNECTION'),
 
     /*
@@ -30,8 +31,8 @@ return [
     | (like with Inertia.js).
     |
     */
-    'sanctum_token_tracking' => false,
 
+    'sanctum_token_tracking' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -45,6 +46,7 @@ return [
     | To enable Logins for all tokens, leave this empty.
     |
     */
+
     'sanctum_token_name_regex' => '',
 
     /*
@@ -147,8 +149,9 @@ return [
     | N = update at most once per N seconds (fewer DB writes).
     |     Requires a shared cache store (Redis, memcached, database).
     */
+
     'activity_update' => [
-        'interval'    => 0,     // seconds; 0 = every request (original behavior)
-        'cache_store' => null,  // null = default store; set a shared store (e.g. 'redis') so the throttle holds across workers
+        'interval' => 0,       // seconds; 0 = every request (original behavior)
+        'cache_store' => null, // null = default store; set a shared store (e.g. 'redis') so the throttle holds across workers
     ],
 ];

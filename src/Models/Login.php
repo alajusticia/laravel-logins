@@ -5,12 +5,14 @@ namespace ALajusticia\Logins\Models;
 use ALajusticia\Expirable\Traits\Expirable;
 use ALajusticia\Logins\Scopes\LoginsScope;
 use ALajusticia\Logins\Traits\ManagesLogins;
+use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Lang;
 use Laravel\Sanctum\PersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
 
@@ -132,7 +134,29 @@ class Login extends Model
      */
     protected function getLastActiveAttribute(): string
     {
+        $activityUpdateInterval = (int) Config::get('logins.activity_update.interval', 0);
+
+        if ($activityUpdateInterval > 0 && $this->last_activity_at->diffInSeconds(now(), true) < $activityUpdateInterval) {
+            return Lang::get('logins::activity.last_active.less_than_ago', [
+                'duration' => $this->getActivityUpdateDuration($activityUpdateInterval),
+            ], $this->last_activity_at->locale());
+        }
+
         return $this->last_activity_at->diffForHumans();
+    }
+
+    /**
+     * Get the activity update interval as a translated duration.
+     */
+    protected function getActivityUpdateDuration(int $activityUpdateInterval): string
+    {
+        $duration = $activityUpdateInterval < 60
+            ? CarbonInterval::seconds($activityUpdateInterval)
+            : CarbonInterval::minutes((int) ceil($activityUpdateInterval / 60));
+
+        return $duration
+            ->locale($this->last_activity_at->locale())
+            ->forHumans();
     }
 
     /**
