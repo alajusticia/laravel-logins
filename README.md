@@ -11,6 +11,7 @@
 
 _____
 
+* [Starter kit](#starter-kit)
 * [Compatibility](#compatibility)
 * [Installation](#installation)
   * [Prepare your authenticatable models](#prepare-your-authenticatable-models)
@@ -43,6 +44,21 @@ _____
 * [Stored User-Agent length](#stored-user-agent-length)
 * [GDPR and Privacy Considerations](#gdpr-and-privacy-considerations)
 * [License](#license)
+
+## Starter kit
+
+<a href="https://inertiastart.com">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/inertia-start-banner-dark.png">
+    <img src="https://raw.githubusercontent.com/alajusticia/laravel-logins/main/images/inertia-start-banner-light.png" alt="Inertia Start: the monetization-ready Laravel, Inertia and Vue starter kit, with Laravel Logins built in">
+  </picture>
+</a>
+
+Laravel Logins comes already installed and wired up in **[Inertia Start](https://inertiastart.com)**, the monetization-ready Laravel, Inertia & Vue starter kit I use for every new project.
+
+Along with active sessions and device management, you get authentication with magic links, OAuth login and 2FA, Stripe & Paddle billing, teams with roles and permissions, privacy-first analytics, localization, a complete user dashboard, shadcn-vue components, and more. Everything is fully typed with TypeScript.
+
+Skip the boilerplate and start building your product: **[inertiastart.com](https://inertiastart.com)**.
 
 ## Compatibility
 
