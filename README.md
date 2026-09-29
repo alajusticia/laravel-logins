@@ -437,23 +437,30 @@ the client's IP address.
 To use this feature, you have to install and configure this package: [https://github.com/stevebauman/location](https://github.com/stevebauman/location).
 Then, enable IP address geolocation in the `logins.php` configuration file.
 
-By default, this is how the client's IP address is determined:
+By default, the client's IP address is resolved through Laravel's current request:
 
 ```php
-// Support Cloudflare proxy by checking if HTTP_CF_CONNECTING_IP header exists
-// Fallback to built-in Laravel ip() method in Request
-
-return $_SERVER['HTTP_CF_CONNECTING_IP'] ?? request()->ip();
+return request()->ip();
 ```
 
-You can define your own IP address resolution logic, by passing a closure to the `getIpAddressUsing()` static method of
-the `ALajusticia\Logins\Logins` class, and returning the resolved IP address.
+Laravel only uses forwarded IP headers when the request came through a proxy trusted by your application. If your app
+is behind Cloudflare, a load balancer, or another reverse proxy, configure Laravel's
+[trusted proxies](https://laravel.com/docs/requests#configuring-trusted-proxies) with that proxy's addresses. Do not read
+`CF-Connecting-IP`, `X-Forwarded-For`, or similar headers directly without first verifying the immediate proxy, because
+clients can otherwise spoof the recorded address.
+
+You can define application-specific IP address resolution logic by passing a closure to the `getIpAddressUsing()` static
+method of the `ALajusticia\Logins\Logins` class. Resolve the current request inside the callback so it remains safe for
+long-running workers such as Laravel Octane.
 
 Call it in the `boot()` method of a service provider, for example in your `App\Providers\AppServiceProvider`:
 
 ```php
-\ALajusticia\Logins\Logins::getIpAddressUsing(function () {
-    return request()->ip();
+use ALajusticia\Logins\Logins;
+use App\Support\ClientIpResolver;
+
+Logins::getIpAddressUsing(function (): ?string {
+    return app(ClientIpResolver::class)->resolve(request());
 });
 ```
 
