@@ -17,7 +17,7 @@ return [
     |
     */
 
-    'database_connection' => env('SESSION_CONNECTION'),
+    'database_connection' => env('LOGINS_DB_CONNECTION'),
 
     /*
     |--------------------------------------------------------------------------
