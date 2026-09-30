@@ -4,6 +4,19 @@ All notable changes to Laravel Logins are documented in this file.
 
 The project follows [Semantic Versioning](https://semver.org/).
 
+## [v1.9.1](https://github.com/alajusticia/laravel-logins/releases/tag/v1.9.1) - 2026-09-30
+
+### Fixed
+
+- Configure dedicated database connection through `LOGINS_DB_CONNECTION` instead of `SESSION_CONNECTION` (It was a remnant of the package's original implementation, when tracked logins were coupled to session storage. Login records are now stored independently as Eloquent models). When left unset, login records use the application's default database connection.
+
+### Upgrade Notes
+
+1. If `config/logins.php` is already published, replace `'database_connection' => env('SESSION_CONNECTION')` with `'database_connection' => env('LOGINS_DB_CONNECTION')`.
+2. If login records should use a non-default relational database connection, set `LOGINS_DB_CONNECTION` to that connection's configured name.
+
+[Full Changelog](https://github.com/alajusticia/laravel-logins/compare/v1.9.0...v1.9.1)
+
 ## [v1.9.0](https://github.com/alajusticia/laravel-logins/releases/tag/v1.9.0) - 2026-09-29
 
 ### Changed
@@ -24,7 +37,7 @@ The project follows [Semantic Versioning](https://semver.org/).
 
 Applications behind Cloudflare, a load balancer, or another reverse proxy must configure that proxy through Laravel's trusted-proxy support. The package no longer trusts `CF-Connecting-IP` automatically.
 
-[Full Changelog](https://github.com/alajusticia/laravel-logins/compare/v1.8.2...HEAD)
+[Full Changelog](https://github.com/alajusticia/laravel-logins/compare/v1.8.2...v1.9.0)
 
 ## [v1.8.2](https://github.com/alajusticia/laravel-logins/releases/tag/v1.8.2) - 2026-08-12
 
