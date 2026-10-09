@@ -21,6 +21,13 @@ class RequestContext implements Arrayable
     protected ?string $tokenName;
 
     /**
+     * Device values replacing the parsed ones (see Logins::describeDeviceUsing()).
+     *
+     * @var array<string, ?string>
+     */
+    protected array $deviceDescription = [];
+
+    /**
      * RequestContext constructor.
      *
      * @throws \Exception
@@ -40,6 +47,8 @@ class RequestContext implements Arrayable
             // Initialize the parser
             $this->parser = ParserFactory::build(Config::get('logins.parser'));
         }
+
+        $this->deviceDescription = Logins::describeDevice($this);
     }
 
     public function date(): Carbon
@@ -53,6 +62,46 @@ class RequestContext implements Arrayable
     public function parser(): UserAgentParser
     {
         return $this->parser;
+    }
+
+    /**
+     * Get the device type (desktop, mobile, tablet...).
+     */
+    public function deviceType(): ?string
+    {
+        return $this->describedOrParsed('device_type', fn () => $this->parser?->getDeviceType());
+    }
+
+    /**
+     * Get the device name.
+     */
+    public function device(): ?string
+    {
+        return $this->describedOrParsed('device', fn () => $this->parser?->getDevice());
+    }
+
+    /**
+     * Get the platform/OS name.
+     */
+    public function platform(): ?string
+    {
+        return $this->describedOrParsed('platform', fn () => $this->parser?->getPlatform());
+    }
+
+    /**
+     * Get the browser name.
+     */
+    public function browser(): ?string
+    {
+        return $this->describedOrParsed('browser', fn () => $this->parser?->getBrowser());
+    }
+
+    /**
+     * Get a value described by Logins::describeDeviceUsing(), or the parsed one.
+     */
+    protected function describedOrParsed(string $key, callable $parsed): ?string
+    {
+        return array_key_exists($key, $this->deviceDescription) ? $this->deviceDescription[$key] : $parsed();
     }
 
     /**
@@ -94,11 +143,11 @@ class RequestContext implements Arrayable
     {
         return [
             'date' => $this->date()->toDateTimeString(),
-            'device_type' => $this->parser()->getDeviceType(),
-            'device' => $this->parser()->getDevice(),
+            'device_type' => $this->deviceType(),
+            'device' => $this->device(),
             'application' => $this->tokenName(),
-            'platform' => $this->parser()->getPlatform(),
-            'browser' => $this->parser()->getBrowser(),
+            'platform' => $this->platform(),
+            'browser' => $this->browser(),
             'ip' => $this->ipAddress(),
             'location' => $this->location() ? $this->location()->toArray() : null,
         ];

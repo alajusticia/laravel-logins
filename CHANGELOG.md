@@ -4,6 +4,31 @@ All notable changes to Laravel Logins are documented in this file.
 
 The project follows [Semantic Versioning](https://semver.org/).
 
+## [v1.10.0](https://github.com/alajusticia/laravel-logins/releases/tag/v1.10.0) - 2026-10-09
+
+### Added
+
+- Add `Logins::describeDeviceUsing()` to describe the device of a login when its User-Agent does not, such as a mobile app calling the API with a generic HTTP client (`okhttp`, `CFNetwork`). The described values are used for the login and in the `LoggedIn` event, so also in the new login notification.
+- Add `Logins::withoutNotifications()` to create logins without sending the new login notification. Unlike the `notifyLogins` property, it also applies to Sanctum personal access tokens, whose login is attached to the token's model as retrieved from the database.
+- Add `RequestContext::deviceType()`, `device()`, `platform()` and `browser()`, returning the described values, or the parsed ones.
+- Index the `personal_access_token_id` column of the `logins` table.
+
+### Fixed
+
+- Run the Sanctum migration (the foreign key deleting the login of a token together with the token) with `php artisan migrate` when Laravel Sanctum is installed, instead of only through `logins:install`. Without it, tokens deleted directly (password change, pruning of expired tokens...) left their logins in the active sessions.
+- Also add the foreign key after a migration run that creates the personal access tokens table later than the package's migrations, as migrations run in file name order.
+- Delete the logins of tokens deleted before the foreign key existed, which prevented adding it.
+- Skip adding the foreign key when it already exists, or when the logins and the tokens are in different databases.
+- Fix rolling back the Sanctum migration: the column was passed to `dropForeign()` as a constraint name.
+- Detect Laravel Sanctum from its classes rather than from the `vendor/laravel/sanctum` directory.
+
+### Upgrade Notes
+
+1. Run `php artisan migrate`. With Laravel Sanctum installed, it adds the foreign key if `logins:install` never did, and it indexes the `personal_access_token_id` column.
+2. If your application added the foreign key itself, it is detected and kept.
+
+[Full Changelog](https://github.com/alajusticia/laravel-logins/compare/v1.9.1...v1.10.0)
+
 ## [v1.9.1](https://github.com/alajusticia/laravel-logins/releases/tag/v1.9.1) - 2026-09-30
 
 ### Fixed

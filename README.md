@@ -19,6 +19,7 @@ _____
   * [Configure the authentication guard](#configure-the-authentication-guard)
   * [Configure the user provider](#configure-the-user-provider)
   * [Laravel Sanctum](#laravel-sanctum)
+    * [Describe the device](#describe-the-device)
 * [Throttling activity updates](#throttling-activity-updates)
 * [UI components](#ui-components)
   * [Vue Starter Kit](#vue-starter-kit)
@@ -185,6 +186,38 @@ configuration file, and only the tokens whose name matches the defined pattern w
 ```php
 'sanctum_token_name_regex' => '/^mobile_app_/',
 ```
+
+#### Describe the device
+
+Mobile apps usually call your API with a generic HTTP client, whose User-Agent does not describe the device
+(`okhttp/4.12.0`, `MyApp/1 CFNetwork/1568 Darwin/24.0.0`...). The login would then be named after the HTTP client,
+in the active sessions and in the new login notification.
+
+Your app can send its device details with the authentication request, and you can describe the device with them by
+registering a callback in the `boot()` method of a service provider. It receives the request context, and returns
+the values to use instead of the parsed ones (among `device_type`, `device`, `platform` and `browser`), or `null` to
+keep the parsed values:
+
+```php
+use ALajusticia\Logins\Logins;
+use ALajusticia\Logins\RequestContext;
+
+Logins::describeDeviceUsing(function (RequestContext $context): ?array {
+    if (! $context->tokenName() || ! request()->has('device')) {
+        return null;
+    }
+
+    return [
+        'device_type' => request()->input('device.type'), // desktop, mobile or tablet
+        'device' => request()->input('device.name'), // Apple iPhone 17 Pro
+        'platform' => request()->input('device.os'), // iOS
+        'browser' => config('app.name'), // The app, in place of the browser
+    ];
+});
+```
+
+The callback is called for every login (sessions and tokens), so check that the request comes from your app, and
+validate the values it sends before using them.
 
 ## Throttling activity updates
 
@@ -512,6 +545,16 @@ If you want to disable notifications for a user for the current request, you can
 $user->notifyLogins = false;
 
 Auth::login($user);
+```
+
+The property cannot apply to Sanctum personal access tokens, as their login is attached to the token's model as
+retrieved from the database. Run the creation of the token through the `withoutNotifications()` method instead (it
+also works for sessions):
+
+```php
+use ALajusticia\Logins\Logins;
+
+$token = Logins::withoutNotifications(fn () => $user->createToken('mobile_app_iphone'));
 ```
 
 ### Disable notifications globally

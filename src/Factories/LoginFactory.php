@@ -57,10 +57,10 @@ class LoginFactory
         return new Login([
             'user_agent' => self::truncateUserAgent($context->userAgent()),
             'ip_address' => $context->ipAddress(),
-            'device_type' => $context->parser()->getDeviceType(),
-            'device' => $context->parser()->getDevice(),
-            'platform' => $context->parser()->getPlatform(),
-            'browser' => $context->parser()->getBrowser(),
+            'device_type' => $context->deviceType(),
+            'device' => $context->device(),
+            'platform' => $context->platform(),
+            'browser' => $context->browser(),
             'location' => $context->location() ?? null,
         ]);
     }

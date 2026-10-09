@@ -27,6 +27,79 @@ class Logins
     protected static $getIpAddressUsingCallback = null;
 
     /**
+     * The callback describing the device of a login, when the User-Agent does not.
+     *
+     * @var callable|null
+     */
+    protected static $describeDeviceUsingCallback = null;
+
+    /**
+     * Determine if new login notifications are sent.
+     */
+    protected static bool $notificationsEnabled = true;
+
+    /**
+     * Register a callback describing the device of a login, for clients whose User-Agent does not
+     * describe the device (a mobile app using a generic HTTP client, for example).
+     *
+     * The callback receives the request context and returns the values to use instead of the parsed
+     * ones, among `device_type`, `device`, `platform` and `browser`, or null to keep the parsed values.
+     *
+     * @param callable(RequestContext): ?array{device_type?: ?string, device?: ?string, platform?: ?string, browser?: ?string}|null $callback
+     */
+    public static function describeDeviceUsing(?callable $callback): void
+    {
+        static::$describeDeviceUsingCallback = $callback;
+    }
+
+    /**
+     * Get the device description of the current login, from the registered callback.
+     *
+     * @return array<string, ?string>
+     */
+    public static function describeDevice(RequestContext $context): array
+    {
+        if (static::$describeDeviceUsingCallback === null) {
+            return [];
+        }
+
+        $description = call_user_func(static::$describeDeviceUsingCallback, $context);
+
+        return array_intersect_key((array) $description, array_flip(['device_type', 'device', 'platform', 'browser']));
+    }
+
+    /**
+     * Run the callback without sending new login notifications, for the logins it creates.
+     *
+     * Unlike the `notifyLogins` property of the model, it also applies to Sanctum personal access tokens,
+     * whose login is attached to the token's model as retrieved from the database.
+     *
+     * @template TReturn
+     *
+     * @param callable(): TReturn $callback
+     * @return TReturn
+     */
+    public static function withoutNotifications(callable $callback): mixed
+    {
+        $enabled = static::$notificationsEnabled;
+        static::$notificationsEnabled = false;
+
+        try {
+            return $callback();
+        } finally {
+            static::$notificationsEnabled = $enabled;
+        }
+    }
+
+    /**
+     * Determine if new login notifications are sent.
+     */
+    public static function notificationsEnabled(): bool
+    {
+        return static::$notificationsEnabled;
+    }
+
+    /**
      * Register a callback that is responsible for retrieving the client's IP address.
      *
      * @param callable(): ?string $callback

@@ -9,6 +9,6 @@ class Helpers
      */
     public static function sanctumIsInstalled(): bool
     {
-        return is_dir(base_path('vendor/laravel/sanctum'));
+        return class_exists(\Laravel\Sanctum\Sanctum::class);
     }
 }
