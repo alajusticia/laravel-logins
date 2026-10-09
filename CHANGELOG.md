@@ -21,6 +21,7 @@ The project follows [Semantic Versioning](https://semver.org/).
 - Skip adding the foreign key when it already exists, or when the logins and the tokens are in different databases.
 - Fix rolling back the Sanctum migration: the column was passed to `dropForeign()` as a constraint name.
 - Detect Laravel Sanctum from its classes rather than from the `vendor/laravel/sanctum` directory.
+- Type the `logins()` relation (`MorphMany<Login, $this>`) and document the attributes of the `Login` model.
 
 ### Upgrade Notes
 

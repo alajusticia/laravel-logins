@@ -17,6 +17,8 @@ trait HasLogins
 
     /**
      * Get all the user's logins.
+     *
+     * @return MorphMany<Login, $this>
      */
     public function logins(): MorphMany
     {

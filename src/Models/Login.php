@@ -16,6 +16,31 @@ use Illuminate\Support\Facades\Lang;
 use Laravel\Sanctum\PersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
 
+/**
+ * @property int $id
+ * @property string $authenticatable_type
+ * @property int|string $authenticatable_id
+ * @property string|null $user_agent
+ * @property string|null $ip_address
+ * @property string|null $device_type
+ * @property string|null $device
+ * @property string|null $platform
+ * @property string|null $browser
+ * @property array<string, mixed>|null $location
+ * @property string|null $session_id
+ * @property string|null $remember_token
+ * @property int|null $personal_access_token_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon $last_activity_at
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read string $label
+ * @property-read bool $is_current
+ * @property-read string $last_active
+ * @property-read \Illuminate\Database\Eloquent\Model $authenticatable
+ * @property-read PersonalAccessToken|null $personalAccessToken
+ */
 class Login extends Model
 {
     use Expirable;
